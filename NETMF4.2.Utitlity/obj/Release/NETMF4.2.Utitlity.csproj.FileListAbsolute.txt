@@ -1,0 +1,12 @@
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\bin\Release\le\NETMF4.2.Utitlity.dll
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\bin\Release\be\NETMF4.2.Utitlity.dll
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\bin\Release\le\NETMF4.2.Utitlity.pdb
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\bin\Release\be\NETMF4.2.Utitlity.pdb
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\bin\Release\NETMF4.2.Utitlity.dll
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\bin\Release\NETMF4.2.Utitlity.pdb
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\bin\Release\le\NETMF4.2.Utitlity.pe
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\bin\Release\le\NETMF4.2.Utitlity.pdbx
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\bin\Release\be\NETMF4.2.Utitlity.pe
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\bin\Release\be\NETMF4.2.Utitlity.pdbx
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\obj\Release\NETMF4.2.Utitlity.dll
+C:\Users\CQ\Dropbox\Library\DOTNET\NETMF4.2.Utitlity\obj\Release\NETMF4.2.Utitlity.pdb

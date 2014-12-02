@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AEF33AFB-75A9-41F3-9D96-D567CB5FDFFB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SmartLab.XBee</RootNamespace>
+    <AssemblyName>NET4.0.XBee.API</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NET4.0.Utility">
+      <HintPath>..\NET4.0.Utility\bin\Release\NET4.0.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Options\OptionsBase.cs" />
+    <Compile Include="Options\RemoteCommandOptions.cs" />
+    <Compile Include="Options\TransmitOptions.cs" />
+    <Compile Include="Options\Tx16TransmitOptions.cs" />
+    <Compile Include="Options\Tx64TransmitOptions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Request\ATCommandRequest.cs" />
+    <Compile Include="Request\CommandRequestBase.cs" />
+    <Compile Include="Request\IOCDetectionConfigRequest.cs" />
+    <Compile Include="Request\PinConfigurationRequest.cs" />
+    <Compile Include="Request\RemoteATCommandRequest.cs" />
+    <Compile Include="Request\RemoteIODetectionConfigRequest.cs" />
+    <Compile Include="Request\RemotePinConfigurationRequest.cs" />
+    <Compile Include="Request\RequestBase.cs" />
+    <Compile Include="Request\TxInterfacecs.cs" />
+    <Compile Include="Request\TxRequestBase.cs" />
+    <Compile Include="Request\XBeeTx16Request.cs" />
+    <Compile Include="Request\XBeeTx64Request.cs" />
+    <Compile Include="Request\ZigBeeExplicitTxRequest.cs" />
+    <Compile Include="Request\ZigBeeTxRequest.cs" />
+    <Compile Include="Response\ATCommandResponse.cs" />
+    <Compile Include="Response\CommandResponseBase.cs" />
+    <Compile Include="Response\CommandResponseInterface.cs" />
+    <Compile Include="Response\ModemStatusResponse.cs" />
+    <Compile Include="Response\NodeIdentificationResponse.cs" />
+    <Compile Include="Response\RemoteCommandResponse.cs" />
+    <Compile Include="Response\ResponseBase.cs" />
+    <Compile Include="Response\RSSIInterface.cs" />
+    <Compile Include="Response\RxResponseBase.cs" />
+    <Compile Include="Response\RxResponseInterface.cs" />
+    <Compile Include="Response\SensorReadResponse.cs" />
+    <Compile Include="Response\TxStatusBase.cs" />
+    <Compile Include="Response\TxStatusInterface.cs" />
+    <Compile Include="Response\XBeeIODataSampleRx16Response.cs" />
+    <Compile Include="Response\XBeeIODataSampleRx64Response.cs" />
+    <Compile Include="Response\XBeeIODataSampleRxBase.cs" />
+    <Compile Include="Response\XBeeRx16Response.cs" />
+    <Compile Include="Response\XBeeRx64Response.cs" />
+    <Compile Include="Response\XBeeRxBase.cs" />
+    <Compile Include="Response\XBeeTxStatusResponse.cs" />
+    <Compile Include="Response\ZigBeeExplicitRxResponse.cs" />
+    <Compile Include="Response\ZigBeeIODataSampleRxResponse.cs" />
+    <Compile Include="Response\ZigBeeRxBase.cs" />
+    <Compile Include="Response\ZigBeeRxResponse.cs" />
+    <Compile Include="Response\ZigBeeTxStatusResponse.cs" />
+    <Compile Include="Status\CommandStatus.cs" />
+    <Compile Include="Status\DeliveryStatus.cs" />
+    <Compile Include="Status\ModemStatus.cs" />
+    <Compile Include="Status\ReceiveStatus.cs" />
+    <Compile Include="Status\ZigBeeDiscoveryStatus.cs" />
+    <Compile Include="Type\APIFrame.cs" />
+    <Compile Include="Type\APIMode.cs" />
+    <Compile Include="Type\API_IDENTIFIER.cs" />
+    <Compile Include="Type\ATCommand.cs" />
+    <Compile Include="Type\Device.cs" />
+    <Compile Include="Type\DeviceAddress.cs" />
+    <Compile Include="Type\ExplicitDeviceAddress.cs" />
+    <Compile Include="Type\IOSamples.cs" />
+    <Compile Include="Type\XBeeDiscoverAddress.cs" />
+    <Compile Include="Type\ZigBeeDiscoverAddress.cs" />
+    <Compile Include="XBeeAPI.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
