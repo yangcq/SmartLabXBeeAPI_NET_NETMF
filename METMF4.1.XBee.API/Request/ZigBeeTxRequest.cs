@@ -20,7 +20,7 @@ namespace SmartLab.XBee.Request
         public ZigBeeTxRequest(byte FrameID, DeviceAddress RemoteDevice, OptionsBase TransmitOptions, byte[] RFData)
             : base(12 + RFData.Length, API_IDENTIFIER.ZigBee_Transmit_Request, FrameID)
         {
-            Array.Copy(RemoteDevice.GetAddressValue(), FrameData, 10);
+            Array.Copy(RemoteDevice.GetAddressValue(), 0, FrameData, 2, 10);
             this.FrameData[12] = 0x00;
             this.FrameData[13] = TransmitOptions.GetValue();
             Array.Copy(RFData, 0, this.FrameData, 14, RFData.Length);

@@ -52,52 +52,59 @@ namespace SmartLab.XBee
         private const byte ESCAPED = 0x7D;
         private const byte XON = 0x11;
         private const byte XOFF = 0x13;
-        private const byte MIN_PACKET_SIZE = 0x06;
-        private const int WAIT_TIME = 100;
-        private const int SYNC_TIMEOUT = 10;
         private const int INITIAL_FRAME_LENGTH = 10;
 
         private SerialPort serialPort;
-        private APIMode Mode;
-        private ResponseBase frame;
+        private ResponseBase response;
+        private APIMode mode;
 
-        private int currentValue;
+        private bool isRunning = false;
         private bool isChecksum = true;
 
         public XBeeAPI(string COM)
             : this(COM, 9600, APIMode.NORMAL)
         { }
 
-        public XBeeAPI(string COM, APIMode Mode)
-            : this(COM, 9600, Mode)
+        public XBeeAPI(string COM, APIMode mode)
+            : this(COM, 9600, mode)
         { }
 
-        public XBeeAPI(string COM, int baudRate, APIMode Mode)
+        public XBeeAPI(string COM, int baudRate, APIMode mode)
         {
             this.serialPort = new SerialPort(COM, baudRate, Parity.None, 8, StopBits.One);
-            this.Mode = Mode;
-            this.frame = new ResponseBase(INITIAL_FRAME_LENGTH);
+            this.mode = mode;
+            this.response = new ResponseBase(INITIAL_FRAME_LENGTH);
+            this.serialPort.Open();
         }
 
+        /// <summary>
+        /// get or set whether to verify receive packet's checksum
+        /// </summary>
         public bool VerifyChecksum
         {
             get { return this.isChecksum; }
             set { this.isChecksum = value; }
         }
 
+        /// <summary>
+        /// to start send and process response, must be called before any function
+        /// </summary>
         public void Start()
         {
-            if (!serialPort.IsOpen)
+            if (!isRunning)
             {
-                serialPort.Open();
+                isRunning = true;
                 new Thread(readingThread).Start();
             }
         }
 
+        /// <summary>
+        /// stop so the serial port can be used for other purpose
+        /// </summary>
         public void Stop()
         {
-            if (serialPort.IsOpen)
-                serialPort.Close();
+            if (isRunning)
+                isRunning = false;
         }
 
         public void Send(RequestBase request)
@@ -112,26 +119,19 @@ namespace SmartLab.XBee
                 byte msb = (byte)(request.GetLength() >> 8);
                 byte lsb = (byte)request.GetLength();
 
-                WriteByte(KEY);
-                if (Mode == APIMode.NORMAL)
-                {
-                    WriteByte(msb);
-                    WriteByte(lsb);
-                    WriteBytes(request.GetFrameData());
-                    WriteByte(request.GetCheckSum());
-                }
-                else
-                {
-                    WriteWithEcsaped(msb);
-                    WriteWithEcsaped(lsb);
-                    for (int i = 0; i < request.GetLength(); i++)
-                        WriteWithEcsaped(request.GetFrameData()[i]);
-                    WriteWithEcsaped(request.GetCheckSum());
-                }
+                _WriteByte(KEY);
+
+                WriteByte(msb);
+                WriteByte(lsb);
+
+                for (int i = 0; i < request.GetLength(); i++)
+                    WriteByte(request.GetFrameData()[i]);
+
+                WriteByte(request.GetCheckSum());
             }
         }
 
-        private void PacketProcess(ResponseBase response)
+        private void PacketProcess()
         {
             if (isChecksum)
             {
@@ -212,24 +212,18 @@ namespace SmartLab.XBee
 
         private void readingThread()
         {
-            while (serialPort.IsOpen)
+            while (isRunning)
             {
-                currentValue = ReadByte();
+                if (ReadByte() != KEY)
+                    continue;
 
-                if (currentValue == -1)
-                    break;
+                int length = getLength();
 
-                if (currentValue == KEY)
-                {
-                    int length = getLength();
-                    if (length >= MIN_PACKET_SIZE)
-                    {
-                        frame.rewind(length);
+                response.rewind(length);
 
-                        if (readPayLoad(frame))
-                            PacketProcess(frame);
-                    }
-                }
+                if (readPayLoad())
+                    PacketProcess();
+                else break;
             }
         }
 
@@ -237,78 +231,68 @@ namespace SmartLab.XBee
         {
             int msb = ReadByte();
 
-            if (msb == -1) return -1;
-
-            if (Mode == APIMode.ESCAPED && msb == ESCAPED)
-                msb = ReadByte() ^ 0x20;
-
             int lsb = ReadByte();
 
-            if (lsb == -1) return -1;
-
-            if (Mode == APIMode.ESCAPED && lsb == ESCAPED)
-                lsb = ReadByte() ^ 0x20;
-
-            return lsb;
-            //return (msb << 8) | lsb;
+            return (msb << 8) | lsb;
         }
 
-        private bool readPayLoad(APIFrame frame)
+        private bool readPayLoad()
         {
             while (true)
-            {
-                currentValue = ReadByte();
-
-                if (currentValue == -1)
-                    return false;
-
-                if (Mode == APIMode.ESCAPED && currentValue == ESCAPED)
-                {
-                    currentValue = ReadByte();
-
-                    if (currentValue == -1)
-                        return false;
-
-                    currentValue ^= 0x20;
-                }
-
-                if (frame.append((byte)currentValue))
+                if (response.append((byte)ReadByte()))
                     return true;
-            }
         }
 
-        #region IO
+        #region IO additional layer to handle ESCAPE automatically
         private byte[] buffer = new byte[1];
 
-        private int ReadByte()
+        /// <summary>
+        /// if success return non zero, -1 means something is wrong
+        /// </summary>
+        /// <returns></returns>
+        private int _ReadByte()
         {
-            int size = serialPort.Read(buffer, 0, 1);
-
-            if (size == 1)
-                return buffer[0];
-            else return -1;
+            serialPort.Read(buffer, 0, 1);
+            return buffer[0];
         }
 
-        private void WriteByte(byte data)
+        /// <summary>
+        /// read one byte payload, which allready handle the escape char, if less than 0 means error occured
+        /// </summary>
+        /// <returns></returns>
+        private int ReadByte()
+        {
+            int value = _ReadByte();
+
+            if (mode == APIMode.ESCAPED && value == ESCAPED)
+                return _ReadByte() ^ 0x20;
+
+            return value;
+        }
+
+        private void _WriteByte(byte data)
         {
             buffer[0] = data;
             serialPort.Write(buffer, 0, 1);
         }
 
-        private void WriteBytes(byte[] data)
+        /// <summary>
+        /// write one byte to the payload, which allready handle the escape char
+        /// </summary>
+        /// <param name="data"></param>
+        private void WriteByte(byte data)
         {
-            serialPort.Write(buffer, 0, data.Length);
-        }
-
-        private void WriteWithEcsaped(byte data)
-        {
-            if (data == KEY || data == ESCAPED || data == XON || data == XOFF)
+            if (mode == APIMode.ESCAPED)
             {
-                WriteByte(ESCAPED);
-                WriteByte((byte)(data ^ 0x20));
+                if (data == KEY || data == ESCAPED || data == XON || data == XOFF)
+                {
+                    _WriteByte(ESCAPED);
+                    _WriteByte( (byte)(data ^ 0x20));
+                    return;
+                }
             }
-            else
-                WriteByte(data);
+
+            _WriteByte(data);
         }
         #endregion
     }

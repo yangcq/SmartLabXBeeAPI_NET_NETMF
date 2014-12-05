@@ -6,11 +6,23 @@ namespace SmartLab.XBee.Type
     {
         public const byte StartDelimiter = 0x7E;
 
+        private bool isLock = false;
+        private int current = 0;
+
+        /// <summary>
+        /// payload length not include the checksum
+        /// </summary>
         protected int Length;
-
+        /// <summary>
+        /// payload content not include the checksum, the valid length is indicated by this.Length
+        /// !! do not use FrameData.Length, this is not the packet's payload length
+        /// </summary>
         protected byte[] FrameData;
-
         protected byte CheckSum;
+        /// <summary>
+        /// a state to indicate whether this packet's checksum is verified while process
+        /// </summary>
+        protected bool isVerify = false;
 
         public APIFrame() { }
         
@@ -45,8 +57,6 @@ namespace SmartLab.XBee.Type
             return CheckSum;
         }
 
-        protected bool isVerify = false;
-
         public bool VerifyChecksum()
         {
             if (isVerify)
@@ -75,9 +85,10 @@ namespace SmartLab.XBee.Type
             this.isVerify = true;
         }
 
-        private bool isLock = false;
-        private int current = 0;
-
+        /// <summary>
+        /// reset only reallocate memory when the payloadLength is large than max length FrameData can hold
+        /// </summary>
+        /// <param name="payloadLength"></param>
         public void rewind(int payloadLength)
         {
             isVerify = false;
@@ -86,19 +97,21 @@ namespace SmartLab.XBee.Type
 
             // only if the required length is large than the max data frame can hold
             if (payloadLength > FrameData.Length)
-            {
-                byte[] temp = FrameData;
                 FrameData = new byte[payloadLength];
-                Array.Copy(temp, FrameData, temp.Length);
-            }
 
             Length = payloadLength;
         }
 
+        /// <summary>
+        /// return true until all the payload and checksum been fill
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public bool append(byte value)
         {
             if (isLock)
                 return false;
+
             if (current >= Length)
             {
                 CheckSum = value;

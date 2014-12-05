@@ -1,7 +1,0 @@
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.XBee.API\bin\Release\NET4.0.XBee.API.dll
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.XBee.API\bin\Release\NET4.0.XBee.API.pdb
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.XBee.API\bin\Release\NET4.0.Utility.dll
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.XBee.API\bin\Release\NET4.0.Utility.pdb
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.XBee.API\obj\Release\NET4.0.XBee.API.csprojResolveAssemblyReference.cache
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.XBee.API\obj\Release\NET4.0.XBee.API.dll
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.XBee.API\obj\Release\NET4.0.XBee.API.pdb

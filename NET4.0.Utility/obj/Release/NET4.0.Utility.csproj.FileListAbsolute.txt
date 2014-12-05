@@ -1,4 +1,0 @@
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.Utility\bin\Release\NET4.0.Utility.dll
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.Utility\bin\Release\NET4.0.Utility.pdb
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.Utility\obj\Release\NET4.0.Utility.dll
-C:\Users\CQ\Dropbox\Library\DOTNET\NET4.0.Utility\obj\Release\NET4.0.Utility.pdb

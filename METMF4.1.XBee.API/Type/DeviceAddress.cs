@@ -8,6 +8,7 @@ namespace SmartLab.XBee.Type
 
         // total 10 bytes
         // IEEE 64 + 16bit networ address
+        // 4 bytes MSB + 4 bytes LSB + 2 NET
         protected byte[] value;
 
         public DeviceAddress() 
@@ -20,6 +21,10 @@ namespace SmartLab.XBee.Type
             this.value = Address64.CombineArray(NET16);
         }
 
+        /// <summary>
+        /// 4 bytes MSB + 4 bytes LSB + 2 NET
+        /// </summary>
+        /// <param name="value"></param>
         public DeviceAddress(byte[] value) 
         {
             this.value = value;
