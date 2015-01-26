@@ -4,7 +4,7 @@ namespace SmartLab.XBee.Request
 {
     public interface ITx
     {
-        void SetTransmitOptions(OptionsBase TransmitOptions);
+        void SetTransmitOptions(OptionsBase transmitOptions);
 
         void SetPayload(byte[] data);
     }

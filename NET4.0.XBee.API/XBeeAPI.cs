@@ -3,6 +3,7 @@ using System.Threading;
 using SmartLab.XBee.Request;
 using SmartLab.XBee.Response;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Options;
 
 namespace SmartLab.XBee
 {
@@ -50,11 +51,19 @@ namespace SmartLab.XBee
         private const byte ESCAPED = 0x7D;
         private const byte XON = 0x11;
         private const byte XOFF = 0x13;
-        private const int INITIAL_FRAME_LENGTH = 10;
+        private const int INITIAL_FRAME_LENGTH = 100;
 
         private SerialPort serialPort;
-        private ResponseBase response;
+        private APIFrame response;
         private APIMode mode;
+
+        private APIFrame safeResponse;
+        private APIFrame request;
+        private bool isSignal = false;
+        private byte waitFrameID;
+        private API_IDENTIFIER waitFrameType;
+        private const int DEFAULT_WAIT = 10000;
+        private EventWaitHandle waitEvent;
 
         private bool isRunning = false;
         private bool isChecksum = true;
@@ -70,10 +79,15 @@ namespace SmartLab.XBee
         public XBeeAPI(string COM, int baudRate, APIMode mode)
         {
             this.serialPort = new SerialPort(COM, baudRate, Parity.None, 8, StopBits.One);
+            this.waitEvent = new AutoResetEvent(false);
             this.mode = mode;
-            this.response = new ResponseBase(INITIAL_FRAME_LENGTH);
+            this.response = new APIFrame(INITIAL_FRAME_LENGTH);
+            this.safeResponse = new APIFrame(INITIAL_FRAME_LENGTH);
+            this.request = new APIFrame(INITIAL_FRAME_LENGTH);
             this.serialPort.Open();
         }
+
+        #region General Function
 
         /// <summary>
         /// get or set whether to verify receive packet's checksum
@@ -102,10 +116,17 @@ namespace SmartLab.XBee
         public void Stop()
         {
             if (isRunning)
+            {
                 isRunning = false;
+                serialPort.Close();
+            }
         }
 
-        public void Send(RequestBase request)
+        /// <summary>
+        /// a general function to send frame out, do not process response
+        /// </summary>
+        /// <param name="request"></param>
+        public void Send(APIFrame request)
         {
             if (!serialPort.IsOpen)
                 return;
@@ -114,20 +135,242 @@ namespace SmartLab.XBee
             {
                 request.CalculateChecksum();
 
-                byte msb = (byte)(request.GetLength() >> 8);
-                byte lsb = (byte)request.GetLength();
+                byte msb = (byte)(request.GetPosition() >> 8);
+                byte lsb = (byte)request.GetPosition();
 
                 _WriteByte(KEY);
 
                 WriteByte(msb);
                 WriteByte(lsb);
 
-                for (int i = 0; i < request.GetLength(); i++)
+                for (int i = 0; i < request.GetPosition(); i++)
                     WriteByte(request.GetFrameData()[i]);
 
                 WriteByte(request.GetCheckSum());
             }
         }
+
+        #endregion
+
+        #region Advance Function
+
+        public XBeeTxStatusResponse SendXBeeTx16(DeviceAddress remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx16(remoteAddress, option, payload, 0, payload.Length); }
+
+        public XBeeTxStatusResponse SendXBeeTx16(DeviceAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        {
+            waitFrameID++;
+            if (waitFrameID == 0)
+                waitFrameID = 0x01;
+
+            waitFrameType = API_IDENTIFIER.XBee_Transmit_Status;
+
+            request.Rewind();
+            request.SetContent((byte)API_IDENTIFIER.Tx16_Request);
+            request.SetContent(waitFrameID);
+            request.SetContent((byte)(remoteAddress.GetNetworkAddress() >> 8));
+            request.SetContent((byte)remoteAddress.GetNetworkAddress());
+            request.SetContent(option.GetValue());
+            request.SetContent(payload, offset, length);
+
+            isSignal = true;
+
+            Send(request);
+
+            waitEvent.WaitOne(DEFAULT_WAIT);
+
+            if (isSignal)
+            {
+                isSignal = false;
+                return null;
+            }
+
+            return new XBeeTxStatusResponse(safeResponse);
+        }
+
+        public XBeeTxStatusResponse SendXBeeTx64(DeviceAddress remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx64(remoteAddress, option, payload, 0, payload.Length); }
+
+        public XBeeTxStatusResponse SendXBeeTx64(DeviceAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        {
+            waitFrameID++;
+            if (waitFrameID == 0)
+                waitFrameID = 0x01;
+
+            waitFrameType = API_IDENTIFIER.XBee_Transmit_Status;
+
+            request.Rewind();
+            request.SetContent((byte)API_IDENTIFIER.Tx64_Request);
+            request.SetContent(waitFrameID);
+            request.SetContent(remoteAddress.GetAddressValue(), 0, 8);
+            request.SetContent(option.GetValue());
+            request.SetContent(payload, offset, length);
+
+            isSignal = true;
+
+            Send(request);
+
+            waitEvent.WaitOne(DEFAULT_WAIT);
+
+            if (isSignal)
+            {
+                isSignal = false;
+                return null;
+            }
+
+            return new XBeeTxStatusResponse(safeResponse);
+        }
+
+        public ATCommandResponse SendATCommand(ATCommand command, bool applyChange, byte[] parameter = null)
+        {
+            if (parameter == null)
+                return SendATCommand(command, applyChange, parameter, 0, 0);
+            else
+                return SendATCommand(command, applyChange, parameter, 0, parameter.Length);
+        }
+
+        public ATCommandResponse SendATCommand(ATCommand command, bool applyChange, byte[] parameter, int offset, int length)
+        {
+            waitFrameID++;
+            if (waitFrameID == 0)
+                waitFrameID = 0x01;
+
+            waitFrameType = API_IDENTIFIER.AT_Command_Response;
+
+            request.Rewind();
+            if (applyChange)
+                request.SetContent((byte)API_IDENTIFIER.AT_Command);
+            else request.SetContent((byte)API_IDENTIFIER.AT_Command_Queue_Parameter_Value);
+            request.SetContent(waitFrameID);
+            request.SetContent(command.GetValue());
+            if (parameter != null)
+                request.SetContent(parameter, offset, length);
+
+            isSignal = true;
+
+            Send(request);
+
+            waitEvent.WaitOne(DEFAULT_WAIT);
+
+            if (isSignal)
+            {
+                isSignal = false;
+                return null;
+            }
+
+            return new ATCommandResponse(safeResponse);
+        }
+
+        public RemoteCommandResponse SendRemoteATCommand(DeviceAddress remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter = null)
+        {
+            if (parameter == null)
+                return SendRemoteATCommand(remoteAddress, command, transmitOptions, parameter, 0, 0);
+            else
+                return SendRemoteATCommand(remoteAddress, command, transmitOptions, parameter, 0, parameter.Length);
+        }
+
+        public RemoteCommandResponse SendRemoteATCommand(DeviceAddress remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter, int parameterOffset, int parameterLength)
+        {
+            waitFrameID++;
+            if (waitFrameID == 0)
+                waitFrameID = 0x01;
+
+            waitFrameType = API_IDENTIFIER.Remote_Command_Response;
+
+            request.Rewind();
+            request.SetContent((byte)API_IDENTIFIER.Remote_Command_Request);
+            request.SetContent(waitFrameID);
+
+            request.SetContent(remoteAddress.GetAddressValue());
+            request.SetContent(transmitOptions.GetValue());
+            request.SetContent(command.GetValue());
+
+            if (parameter != null)
+                request.SetContent(parameter, parameterOffset, parameterLength);
+
+            isSignal = true;
+
+            Send(request);
+
+            waitEvent.WaitOne(DEFAULT_WAIT);
+
+            if (isSignal)
+            {
+                isSignal = false;
+                return null;
+            }
+
+            return new RemoteCommandResponse(safeResponse);
+        }
+
+        public ZigBeeTxStatusResponse SendZigBeeTx(DeviceAddress remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeTx(remoteAddress, option, payload, 0, payload.Length); }
+
+        public ZigBeeTxStatusResponse SendZigBeeTx(DeviceAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        {
+            waitFrameID++;
+            if (waitFrameID == 0)
+                waitFrameID = 0x01;
+
+            waitFrameType = API_IDENTIFIER.ZigBee_Transmit_Status;
+
+            request.Rewind();
+            request.SetContent((byte)API_IDENTIFIER.ZigBee_Transmit_Request);
+            request.SetContent(waitFrameID);
+            request.SetContent(remoteAddress.GetAddressValue());
+            request.SetContent(0x00);
+            request.SetContent(option.GetValue());
+            request.SetContent(payload, offset, length);
+
+            isSignal = true;
+
+            Send(request);
+
+            waitEvent.WaitOne(DEFAULT_WAIT);
+
+            if (isSignal)
+            {
+                isSignal = false;
+                return null;
+            }
+
+            return new ZigBeeTxStatusResponse(safeResponse);
+        }
+
+        public ZigBeeTxStatusResponse SendZigBeeExplicitTx(ExplicitDeviceAddress remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeExplicitTx(remoteAddress, option, payload, 0, payload.Length); }
+
+        public ZigBeeTxStatusResponse SendZigBeeExplicitTx(ExplicitDeviceAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        {
+            waitFrameID++;
+            if (waitFrameID == 0)
+                waitFrameID = 0x01;
+
+            waitFrameType = API_IDENTIFIER.ZigBee_Transmit_Status;
+
+            request.Rewind();
+            request.SetContent((byte)API_IDENTIFIER.Explicit_Addressing_ZigBee_Command_Frame);
+            request.SetContent(waitFrameID);
+            request.SetContent(remoteAddress.GetAddressValue());
+            request.SetContent(remoteAddress.GetExplicitValue());
+            request.SetContent(0x00);
+            request.SetContent(option.GetValue());
+            request.SetContent(payload, offset, length);
+
+            isSignal = true;
+
+            Send(request);
+
+            waitEvent.WaitOne(DEFAULT_WAIT);
+
+            if (isSignal)
+            {
+                isSignal = false;
+                return null;
+            }
+
+            return new ZigBeeTxStatusResponse(safeResponse);
+        }
+
+        #endregion
+
+        #region Packet Process
 
         private void PacketProcess()
         {
@@ -139,6 +382,15 @@ namespace SmartLab.XBee
                         onChecksumError(response);
                     return;
                 }
+            }
+
+            if (isSignal && response.GetFrameData()[1] == request.GetFrameData()[1] && response.GetFrameType() == waitFrameType)
+            {
+                isSignal = false;
+                safeResponse.Rewind();
+                safeResponse.SetContent(response.GetFrameData(), 0, response.GetPosition());
+                waitEvent.Set();
+                return;
             }
 
             switch (response.GetFrameType())
@@ -212,16 +464,20 @@ namespace SmartLab.XBee
         {
             while (isRunning)
             {
-                if (ReadByte() != KEY)
-                    continue;
+                try
+                {
+                    if (ReadByte() != KEY)
+                        continue;
 
-                int length = getLength();
+                    int length = getLength();
 
-                response.rewind(length);
+                    response.Allocate(length);
 
-                if (readPayLoad())
+                    readPayLoad(length);
+
                     PacketProcess();
-                else break;
+                }
+                catch { break; }
             }
         }
 
@@ -234,12 +490,15 @@ namespace SmartLab.XBee
             return (msb << 8) | lsb;
         }
 
-        private bool readPayLoad()
+        private void readPayLoad(int length)
         {
-            while (true)
-                if (response.append((byte)ReadByte()))
-                    return true;
+            for (int i = 0; i < length; i++)
+                response.SetContent((byte)ReadByte());
+
+            response.SetCheckSum((byte)ReadByte());
         }
+
+        #endregion
 
         #region IO additional layer to handle ESCAPE automatically
 
@@ -289,6 +548,7 @@ namespace SmartLab.XBee
 
             _WriteByte(data);
         }
+
         #endregion
     }
 }

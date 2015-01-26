@@ -5,53 +5,55 @@ namespace SmartLab.XBee.Response
 {
     public class SensorReadResponse : ZigBeeRxBase
     {
-        public SensorReadResponse(ResponseBase Frame)
-            : base(Frame)
+        public SensorReadResponse(APIFrame frame)
+            : base(frame)
         { }
+
+        public override int GetReceivedDataOffset() { return 12; }
 
         public override byte[] GetReceivedData()
         {
-            return FrameData.ExtractRangeFromArray(12, Length - 12);
+            return GetFrameData().ExtractRangeFromArray(12, GetPosition() - 12);
         }
 
         public override DeviceAddress GetRemoteDevice()
         {
-            return new DeviceAddress(FrameData.ExtractRangeFromArray(1, 10));
+            return new DeviceAddress(GetFrameData().ExtractRangeFromArray(1, 10));
         }
 
-        public override ReceiveStatus GetReceiveStatus() 
+        public override ReceiveStatus GetReceiveStatus()
         {
-            return (ReceiveStatus)this.FrameData[11];
+            return (ReceiveStatus)this.GetFrameData()[11];
         }
 
         public Device.OneWireSensors GetOneWireSensor()
         {
-            return (Device.OneWireSensors)this.FrameData[12];
+            return (Device.OneWireSensors)this.GetFrameData()[12];
         }
 
-        public byte[] GetAD0()
+        public int GetAD0()
         {
-            return new byte[2] { this.FrameData[13], this.FrameData[14] };
+            return this.GetFrameData()[13] << 8 | this.GetFrameData()[14];
         }
 
-        public byte[] GetAD1()
+        public int GetAD1()
         {
-            return new byte[2] { this.FrameData[15], this.FrameData[16] };
+            return this.GetFrameData()[15] << 8 | this.GetFrameData()[16];
         }
 
-        public byte[] GetAD2()
+        public int GetAD2()
         {
-            return new byte[2] { this.FrameData[17], this.FrameData[18] };
+            return this.GetFrameData()[17] << 8 | this.GetFrameData()[18];
         }
 
-        public byte[] GetAD3()
+        public int GetAD3()
         {
-            return  new byte[2] { this.FrameData[19], this.FrameData[20] };
+            return this.GetFrameData()[19] << 8 | this.GetFrameData()[20];
         }
 
-        public byte[] GetThemometer() 
+        public int GetThemometer()
         {
-            return new byte[2] { this.FrameData[21], this.FrameData[22] };
+            return this.GetFrameData()[21] << 8 | this.GetFrameData()[22];
         }
     }
 }

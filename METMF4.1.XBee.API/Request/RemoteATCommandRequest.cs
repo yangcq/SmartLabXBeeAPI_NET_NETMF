@@ -13,8 +13,8 @@ namespace SmartLab.XBee.Request
         //AT_Command
         //Parameter_Value
 
-        public RemoteATCommandRequest(DeviceAddress RemoteDevice, OptionsBase TransmitOptions, ATCommand Command, byte[] Parameter)
-            : this(0x00, RemoteDevice, TransmitOptions, Command, Parameter)
+        public RemoteATCommandRequest(byte frameID, DeviceAddress remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter = null)
+            : this(frameID, remoteAddress, command, transmitOptions, parameter, 0, parameter == null ? 0 : parameter.Length)
         { }
 
         /// <summary>
@@ -25,41 +25,36 @@ namespace SmartLab.XBee.Request
         /// <param name="options">RemoteCommandOptions</param>
         /// <param name="AT_Command"></param>
         /// <param name="Parameter_Value">this can be null</param>
-        public RemoteATCommandRequest(byte FrameID, DeviceAddress RemoteDevice, OptionsBase TransmitOptions, ATCommand Command, byte[] Parameter)
-            : base(13 + (Parameter == null ? 0 : Parameter.Length), API_IDENTIFIER.Remote_Command_Request, FrameID)
+        public RemoteATCommandRequest(byte frameID, DeviceAddress remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter, int parameterOffset, int parameterLength)
+            : base(13 + (parameter == null ? 0 : parameter.Length), API_IDENTIFIER.Remote_Command_Request, frameID)
         {
-            Array.Copy(RemoteDevice.GetAddressValue(), 0, this.FrameData, 2, 10);
-            this.FrameData[12] = TransmitOptions.GetValue();
-            this.FrameData[13] = Command.GetValue()[0];
-            this.FrameData[14] = Command.GetValue()[1];
+            this.SetContent(remoteAddress.GetAddressValue());
+            this.SetContent(transmitOptions.GetValue());
+            this.SetContent(command.GetValue());
 
-            if (Parameter != null)
-                Array.Copy(Parameter, 0, this.FrameData, 15, Parameter.Length);
+            if (parameter != null)
+                this.SetContent(parameter, parameterOffset, parameterLength);
         }
 
-        public void SetTransmitOptions(OptionsBase TransmitOptions)
+        public void SetTransmitOptions(OptionsBase TransmitOptions) { this.SetContent(12, TransmitOptions.GetValue()); }
+
+        public override void SetAppleChanges(bool appleChanges)
         {
-            this.FrameData[12] = TransmitOptions.GetValue();
+            if (appleChanges)
+                this.GetFrameData()[12] |= 0x02;
+            else this.GetFrameData()[12] &= 0xFD;
         }
 
-        public override void SetCommand(ATCommand Command)
+        public override void SetCommand(ATCommand command) { this.SetContent(13, command.GetValue()); }
+
+        public override void SetParameter(byte[] parameter) { this.SetContent(15, parameter, 0, parameter.Length); }
+
+        public override void SetParameter(byte[] parameter, int offset, int length)
         {
-            if (Command == null)
-                throw new ArgumentNullException();
-            this.FrameData[13] = Command.GetValue()[0];
-            this.FrameData[14] = Command.GetValue()[1];
+            this.SetContent(15, parameter, offset, length);
+            this.SetPosition(15 + length - offset);
         }
 
-        public override void SetAppleChanges(bool AppleChanges)
-        {
-            if (AppleChanges)
-                FrameData[12] |= 0x02;
-            else FrameData[12] &= 0xFD;
-        }
-
-        public override void SetParameter(byte[] Parameter)
-        {
-            SetData(15, Parameter);
-        }
+        public void SetRemoteAddress(DeviceAddress remoteAddress) { this.SetContent(2, remoteAddress.GetAddressValue()); }
     }
 }

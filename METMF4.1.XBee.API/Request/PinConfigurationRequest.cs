@@ -8,13 +8,6 @@ namespace SmartLab.XBee.Request
             : base(FrameID, new ATCommand(Pin.COMMAND), new byte[] { (byte)Functions })
         { }
 
-        public PinConfigurationRequest(Device.Pin Pin, Device.Pin.Functions Functions)
-            : base(new ATCommand(Pin.COMMAND), new byte[] { (byte)Functions })
-        { }
-
-        public void SetPinFunction(Device.Pin.Functions Functions)
-        {
-            SetParameter(new byte[] { (byte)Functions });
-        }
+        public void SetPinFunction(Device.Pin.Functions Functions) { this.SetContent(4, (byte)Functions); }
     }
 }

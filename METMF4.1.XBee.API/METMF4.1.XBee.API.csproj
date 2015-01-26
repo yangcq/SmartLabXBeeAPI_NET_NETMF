@@ -60,7 +60,7 @@
     <Compile Include="Response\ResponseBase.cs" />
     <Compile Include="Response\RSSIInterface.cs" />
     <Compile Include="Response\RxResponseBase.cs" />
-    <Compile Include="Response\RxResponseInterface.cs" />
+    <Compile Include="Response\SensorReadResponse.cs" />
     <Compile Include="Response\TxStatusBase.cs" />
     <Compile Include="Response\TxStatusInterface.cs" />
     <Compile Include="Response\XBeeIODataSampleRx16Response.cs" />
@@ -69,7 +69,6 @@
     <Compile Include="Response\XBeeRx16Response.cs" />
     <Compile Include="Response\XBeeRx64Response.cs" />
     <Compile Include="Response\XBeeRxBase.cs" />
-    <Compile Include="Response\SensorReadResponse.cs" />
     <Compile Include="Response\XBeeTxStatusResponse.cs" />
     <Compile Include="Response\ZigBeeExplicitRxResponse.cs" />
     <Compile Include="Response\ZigBeeIODataSampleRxResponse.cs" />

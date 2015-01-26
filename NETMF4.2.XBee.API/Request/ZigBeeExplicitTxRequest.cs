@@ -17,33 +17,37 @@ namespace SmartLab.XBee.Request
         //TransmitOptions;
         //RF_Data;
 
-        public ZigBeeExplicitTxRequest(ExplicitDeviceAddress RemoteDevice, OptionsBase TransmitOptions, byte[] RFData)
-            : this(0x00, RemoteDevice, TransmitOptions, RFData)
+        public ZigBeeExplicitTxRequest(byte frameID, ExplicitDeviceAddress remoteAddress, OptionsBase transmitOptions, byte[] payload)
+            : this(frameID, remoteAddress, transmitOptions, payload, 0, payload.Length)
         { }
 
-        public ZigBeeExplicitTxRequest(byte FrameID, ExplicitDeviceAddress RemoteDevice, OptionsBase TransmitOptions, byte[] RFData)
-            : base(18 + RFData.Length, API_IDENTIFIER.Explicit_Addressing_ZigBee_Command_Frame, FrameID)
+        public ZigBeeExplicitTxRequest(byte frameID, ExplicitDeviceAddress remoteAddress, OptionsBase transmitOptions, byte[] payload, int offset, int length)
+            : base(18 + payload.Length, API_IDENTIFIER.Explicit_Addressing_ZigBee_Command_Frame, frameID)
         {
-            Array.Copy(RemoteDevice.GetAddressValue(), 0, FrameData, 2, 10);
-            Array.Copy(RemoteDevice.GetExplicitValue(), 0, FrameData, 12, 6);
-            this.FrameData[18] = 0x00;
-            this.FrameData[19] = TransmitOptions.GetValue();
-            Array.Copy(RFData, 0, this.FrameData, 20, RFData.Length);
+            this.SetContent(remoteAddress.GetAddressValue());
+            this.SetContent(remoteAddress.GetExplicitValue());
+            this.SetContent(0x00);
+            this.SetContent(transmitOptions.GetValue());
+            this.SetContent(payload, offset, length);
         }
 
-        public void SetBroadcastRadius(byte BroadcastRadius)
+        public void SetBroadcastRadius(byte broadcastRadius) { this.SetContent(18, broadcastRadius); }
+
+        public override void SetTransmitOptions(OptionsBase transmitOptions) { this.SetContent(19, transmitOptions.GetValue()); }
+
+        public override void SetPayload(byte[] data) { SetPayload(data, 0, data.Length); }
+
+        public override void SetPayload(byte[] data, int offset, int length)
         {
-            this.FrameData[18] = BroadcastRadius;
+            this.SetContent(20, data, offset, length);
+            this.SetPosition(20 + length - offset);
         }
 
-        public override void SetTransmitOptions(OptionsBase TransmitOptions)
-        {
-            this.FrameData[19] = TransmitOptions.GetValue();
-        }
+        public override void SetRemoteAddress(DeviceAddress remoteAddress) { this.SetContent(2, remoteAddress.GetAddressValue()); }
 
-        public override void SetPayload(byte[] data)
+        public void SetRemoteExplicitAddress(ExplicitDeviceAddress remoteAddress) 
         {
-            SetData(20, data);
-        }
+            this.SetContent(2, remoteAddress.GetAddressValue());
+            this.SetContent(12, remoteAddress.GetExplicitValue());         }
     }
 }

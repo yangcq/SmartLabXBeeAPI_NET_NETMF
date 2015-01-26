@@ -2,49 +2,142 @@ using System;
 
 namespace SmartLab.XBee.Type
 {
-    public abstract class APIFrame
+    public class APIFrame
     {
         public const byte StartDelimiter = 0x7E;
-
-        private bool isLock = false;
-        private int current = 0;
+        private const int EXPANDSIZE = 100;
 
         /// <summary>
         /// payload length not include the checksum
         /// </summary>
-        protected int Length;
+        private int position = 0;
+
         /// <summary>
         /// payload content not include the checksum, the valid length is indicated by this.Length
         /// !! do not use FrameData.Length, this is not the packet's payload length
         /// </summary>
-        protected byte[] FrameData;
-        protected byte CheckSum;
+        private byte[] FrameData;
+
+        private byte CheckSum;
+
         /// <summary>
         /// a state to indicate whether this packet's checksum is verified while process
         /// </summary>
-        protected bool isVerify = false;
+        private bool isVerify = false;
 
-        public APIFrame() { }
-        
-        public APIFrame(int payloadLength)
+        public APIFrame(APIFrame frame) 
         {
-            this.Length = payloadLength;
-            this.FrameData = new byte[Length];
+            this.FrameData = frame.FrameData;
+            this.position = frame.position;
+            this.CheckSum = frame.CheckSum;
+            this.isVerify = frame.isVerify;
         }
 
-        public API_IDENTIFIER GetFrameType()
+        public APIFrame(int payloadLength) { this.FrameData = new byte[payloadLength]; }
+
+
+        public API_IDENTIFIER GetFrameType() { return (API_IDENTIFIER)FrameData[0]; }
+
+        /// <summary>
+        /// this does not affect the position
+        /// </summary>
+        /// <param name="identifier"></param>
+        public void SetFrameType(API_IDENTIFIER identifier) { this.SetContent(0, (byte)identifier); }
+
+
+        public int GetPosition() { return this.position; }
+
+        public void SetPosition(int position) 
         {
-            return (API_IDENTIFIER)FrameData[0];
+            if (position > this.FrameData.Length)
+                position = this.FrameData.Length;
+            else this.position = position; 
         }
 
-        protected void SetFrameType(API_IDENTIFIER identifier)
+
+        public void Allocate(int length)
         {
-            FrameData[0] = (byte)identifier;
+            if (length <= 0)
+                return;
+
+            if (length > this.FrameData.Length)
+                this.FrameData = new byte[length];
+
+            this.Rewind();
         }
 
-        public int GetLength()
+        public void Rewind() { this.position = 0; }
+
+        /// <summary>
+        /// write the value into the current posiont and the posiont + 1
+        /// will create more space if position overflow
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetContent(byte value)
         {
-            return Length;
+            SetContent(this.position, value);
+            this.position++;
+        }
+
+        /// <summary>
+        /// write the value into anywhere and the current positon not affected
+        /// will create more space if position overflow
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <param name="value"></param>
+        public void SetContent(int index, byte value)
+        {
+            if (index < 0)
+                return;
+
+            if (index >= this.FrameData.Length)
+                ExpandSpace(1);
+
+            this.FrameData[index] = value;
+        }
+
+        /// <summary>
+        /// write the value into the current posiont and the posiont + value.length
+        /// will create more space if position overflow
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetContent(byte[] value) { SetContent(value, 0, value.Length); }
+
+        /// <summary>
+        /// write the value into anywhere and the current positon not affected
+        /// will create more space if position overflow
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="value"></param>
+        public void SetContent(int index, byte[] value) { SetContent(index , value, 0, value.Length); }
+
+        /// <summary>
+        /// write the value into the current posiont and the posiont + length
+        /// will create more space if position overflow
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        public void SetContent(byte[] value, int offset, int length)
+        {
+            SetContent(position, value, offset, length);
+            position += length;
+        }
+
+        /// <summary>
+        /// write the value into anywhere and the current positon not affected
+        /// will create more space if position overflow
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="value"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        public void SetContent(int index, byte[] value, int offset, int length)
+        {
+            if (index + length - offset > this.FrameData.Length)
+                ExpandSpace(index + length - offset - this.FrameData.Length);
+
+            Array.Copy(value, 0, this.FrameData, index, length);
         }
 
         public byte[] GetFrameData()
@@ -52,10 +145,10 @@ namespace SmartLab.XBee.Type
             return this.FrameData;
         }
 
-        public byte GetCheckSum()
-        {
-            return CheckSum;
-        }
+
+        public byte GetCheckSum() { return CheckSum; }
+
+        public void SetCheckSum(byte value) { this.CheckSum = value; }
 
         public bool VerifyChecksum()
         {
@@ -63,7 +156,7 @@ namespace SmartLab.XBee.Type
                 return true;
 
             byte temp = 0x00;
-            for (int i = 0; i < Length; i++)
+            for (int i = 0; i < this.position; i++)
                 temp += this.FrameData[i];
             if (temp + this.CheckSum == 0xFF)
                 isVerify = true;
@@ -75,54 +168,18 @@ namespace SmartLab.XBee.Type
 
         public void CalculateChecksum()
         {
-            if (this.isVerify)
-                return;
-
             byte CS = 0x00;
-            for (int i = 0; i < Length; i++)
+            for (int i = 0; i < this.position; i++)
                 CS += this.FrameData[i];
             this.CheckSum = (byte)(0xFF - CS);
             this.isVerify = true;
         }
 
-        /// <summary>
-        /// reset only reallocate memory when the payloadLength is large than max length FrameData can hold
-        /// </summary>
-        /// <param name="payloadLength"></param>
-        public void rewind(int payloadLength)
+        private void ExpandSpace(int length)
         {
-            isVerify = false;
-            isLock = false;
-            current = 0;
-
-            // only if the required length is large than the max data frame can hold
-            if (payloadLength > FrameData.Length)
-                FrameData = new byte[payloadLength];
-
-            Length = payloadLength;
-        }
-
-        /// <summary>
-        /// return true until all the payload and checksum been fill
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public bool append(byte value)
-        {
-            if (isLock)
-                return false;
-
-            if (current >= Length)
-            {
-                CheckSum = value;
-                isLock = true;
-                return true;
-            }
-            else
-            {
-                FrameData[current++] = value;
-                return false;
-            }
+            byte[] temp = this.FrameData;
+            this.FrameData = new byte[this.FrameData.Length + EXPANDSIZE * (1 + length / EXPANDSIZE)];
+            Array.Copy(temp, this.FrameData, this.position);
         }
     }
 }

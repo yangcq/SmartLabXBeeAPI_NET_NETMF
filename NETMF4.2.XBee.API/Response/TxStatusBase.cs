@@ -1,16 +1,17 @@
 using SmartLab.XBee.Status;
+using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Response
 {
-    public abstract class TxStatusBase : ResponseBase , ITxStatus
+    public abstract class TxStatusBase : ResponseBase, ITxStatus
     {
-        public TxStatusBase(ResponseBase Frame) 
-        :base(Frame)
+        public TxStatusBase(APIFrame frame)
+            : base(frame)
         { }
 
         public int GetFrameID()
         {
-            return this.FrameData[1];
+            return this.GetFrameData()[1];
         }
 
         public abstract DeliveryStatus GetDeliveryStatus();

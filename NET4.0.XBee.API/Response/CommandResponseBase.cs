@@ -5,11 +5,11 @@ namespace SmartLab.XBee.Response
 {
     public abstract class CommandResponseBase : ResponseBase, ICommandResponse
     {
-        public CommandResponseBase(ResponseBase Frame)
-            : base(Frame)
+        public CommandResponseBase(APIFrame frame)
+            : base(frame)
         { }
 
-        public int GetFrameID() { return FrameData[1]; }
+        public int GetFrameID() { return GetFrameData()[1]; }
 
         public abstract ATCommand GetRequestCommand();
 

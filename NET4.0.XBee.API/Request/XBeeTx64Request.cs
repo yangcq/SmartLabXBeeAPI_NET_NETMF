@@ -12,26 +12,46 @@ namespace SmartLab.XBee.Request
         //Option
         //RFData
 
-        public XBeeTx64Request(DeviceAddress RemoteDevice, OptionsBase TransmitOptions, byte[] RFData)
-            : this(0x00, RemoteDevice, TransmitOptions, RFData)
+        /// <summary>
+        /// the ieee 16 bit address is ignored
+        /// </summary>
+        /// <param name="frameID"></param>
+        /// <param name="remoteAddress"></param>
+        /// <param name="transmitOptions"></param>
+        /// <param name="RFData"></param>
+        public XBeeTx64Request(byte frameID, DeviceAddress remoteAddress, OptionsBase transmitOptions, byte[] payload)
+            : this(frameID, remoteAddress, transmitOptions, payload, 0, payload.Length) 
         { }
 
-        public XBeeTx64Request(byte FrameID, DeviceAddress RemoteDevice, OptionsBase TransmitOptions, byte[] RFData)
-            : base(9 + RFData.Length, API_IDENTIFIER.Tx64_Request, FrameID)
+        /// <summary>
+        /// the ieee 16 bit address is ignored
+        /// </summary>
+        /// <param name="frameID"></param>
+        /// <param name="remoteAddress"></param>
+        /// <param name="transmitOptions"></param>
+        /// <param name="RFData"></param>
+        public XBeeTx64Request(byte frameID, DeviceAddress remoteAddress, OptionsBase transmitOptions, byte[] payload, int offset, int length)
+            : base(9 + payload.Length, API_IDENTIFIER.Tx64_Request, frameID)
         {
-            Array.Copy(RemoteDevice.GetAddressValue(), 0, this.FrameData, 2, 8);
-            this.FrameData[10] = TransmitOptions.GetValue();
-            Array.Copy(RFData, 0, this.FrameData, 11, RFData.Length);
+            this.SetContent(remoteAddress.GetAddressValue(), 2, 8);
+            this.SetContent(transmitOptions.GetValue());
+            this.SetContent(payload, offset, length);
         }
 
-        public override void SetPayload(byte[] data)
+        public override void SetPayload(byte[] data) { SetPayload(data, 0, data.Length); }
+
+        public override void SetPayload(byte[] data, int offset, int length)
         {
-            SetData(11, data);
+            this.SetContent(11, data, offset, length);
+            this.SetPosition(11 + length - offset);
         }
 
-        public override void SetTransmitOptions(OptionsBase TransmitOptions)
-        {
-            this.FrameData[10] = TransmitOptions.GetValue();
-        }
+        public override void SetTransmitOptions(OptionsBase transmitOptions) { this.SetContent(10, transmitOptions.GetValue()); }
+
+        /// <summary>
+        /// the ieee 16 bit address is ignored
+        /// </summary>
+        /// <param name="networkAddress"></param>
+        public override void SetRemoteAddress(DeviceAddress remoteAddress) { this.SetContent(2, remoteAddress.GetAddressValue(), 2, 8); }
     }
 }

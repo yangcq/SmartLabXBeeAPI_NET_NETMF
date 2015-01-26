@@ -5,24 +5,28 @@ namespace SmartLab.XBee.Response
 {
     public class ATCommandResponse : CommandResponseBase
     {
-        public ATCommandResponse(ResponseBase Frame)
-            : base(Frame)
+        public ATCommandResponse(APIFrame frame)
+            : base(frame)
         { }
 
         public override ATCommand GetRequestCommand()
         {
-            return new ATCommand(new byte[2] { this.FrameData[2], this.FrameData[3] });
+            return new ATCommand(new byte[2] { this.GetFrameData()[2], this.GetFrameData()[3] });
         }
 
         public override CommandStatus GetCommandStatus()
         {
-            return (CommandStatus)this.FrameData[4];
+            return (CommandStatus)this.GetFrameData()[4];
         }
 
+        /// <summary>
+        /// if parameter not presented, null will be returned.
+        /// </summary>
+        /// <returns></returns>
         public override byte[] GetParameter()
         {
-            if (Length > 5)
-                return this.FrameData.ExtractRangeFromArray(5, Length - 5);
+            if (this.GetPosition() > 5)
+                return this.GetFrameData().ExtractRangeFromArray(5, this.GetPosition() - 5);
             else return null;
         }
     }

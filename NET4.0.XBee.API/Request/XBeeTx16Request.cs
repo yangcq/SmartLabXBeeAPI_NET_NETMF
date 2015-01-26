@@ -6,27 +6,55 @@ namespace SmartLab.XBee.Request
 {
     public class XBeeTx16Request : TxRequestBase
     {
-        public XBeeTx16Request(int NetworkAddress, OptionsBase TransmitOptions, byte[] RFData)
-            : this(0x00, NetworkAddress, TransmitOptions, RFData)
+        /// <summary>
+        /// the ieee 64 bit address is ignored
+        /// </summary>
+        /// <param name="frameID"></param>
+        /// <param name="remoteAddress"></param>
+        /// <param name="transmitOptions"></param>
+        /// <param name="RFData"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        public XBeeTx16Request(byte frameID, DeviceAddress remoteAddress, OptionsBase transmitOptions, byte[] payload)
+            : this(frameID, remoteAddress, transmitOptions, payload, 0, payload.Length)
         { }
 
-        public XBeeTx16Request(byte FrameID, int NetworkAddress, OptionsBase TransmitOptions, byte[] RFData)
-            : base(3 + RFData.Length, API_IDENTIFIER.Tx16_Request, FrameID)
+        /// <summary>
+        /// the ieee 64 bit address is ignored
+        /// </summary>
+        /// <param name="frameID"></param>
+        /// <param name="remoteAddress"></param>
+        /// <param name="transmitOptions"></param>
+        /// <param name="RFData"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        public XBeeTx16Request(byte frameID, DeviceAddress remoteAddress, OptionsBase transmitOptions, byte[] payload, int offset, int length)
+            : base(3 + payload.Length, API_IDENTIFIER.Tx16_Request, frameID)
         {
-            this.FrameData[2] = (byte)(NetworkAddress >> 8);
-            this.FrameData[3] = (byte)NetworkAddress;
-            this.FrameData[4] = TransmitOptions.GetValue();
-            Array.Copy(RFData, 0, this.FrameData, 5, RFData.Length);
+            this.SetContent((byte)(remoteAddress.GetNetworkAddress() >> 8));
+            this.SetContent((byte)remoteAddress.GetNetworkAddress());
+            this.SetContent(transmitOptions.GetValue());
+            this.SetContent(payload, offset, length);
         }
 
-        public override void SetPayload(byte[] data)
+        public override void SetPayload(byte[] data) { SetPayload(data, 0, data.Length); }
+
+        public override void SetPayload(byte[] data, int offset, int length)
         {
-            SetData(5, data);
+            this.SetContent(5, data, offset, length);
+            this.SetPosition(5 + length - offset);
         }
 
-        public override void SetTransmitOptions(OptionsBase TransmitOptions)
+        public override void SetTransmitOptions(OptionsBase transmitOptions) { this.SetContent(4, transmitOptions.GetValue()); }
+        
+        /// <summary>
+        /// the ieee 64 bit address is ignored
+        /// </summary>
+        /// <param name="networkAddress"></param>
+        public override void SetRemoteAddress(DeviceAddress remoteAddress)
         {
-            this.FrameData[4] = TransmitOptions.GetValue();
+            this.SetContent(2, (byte)(remoteAddress.GetNetworkAddress() >> 8));
+            this.SetContent(3, (byte)(remoteAddress.GetNetworkAddress()));
         }
     }
 }

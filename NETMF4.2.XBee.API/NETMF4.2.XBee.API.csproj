@@ -59,7 +59,6 @@
     <Compile Include="Response\ResponseBase.cs" />
     <Compile Include="Response\RSSIInterface.cs" />
     <Compile Include="Response\RxResponseBase.cs" />
-    <Compile Include="Response\RxResponseInterface.cs" />
     <Compile Include="Response\SensorReadResponse.cs" />
     <Compile Include="Response\TxStatusBase.cs" />
     <Compile Include="Response\TxStatusInterface.cs" />

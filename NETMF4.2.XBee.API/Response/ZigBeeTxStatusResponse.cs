@@ -1,31 +1,32 @@
 using SmartLab.XBee.Status;
+using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Response
 {
     public class ZigBeeTxStatusResponse : TxStatusBase
     {
-        public ZigBeeTxStatusResponse(ResponseBase Frame)
-            : base(Frame)
+        public ZigBeeTxStatusResponse(APIFrame frame)
+            : base(frame)
         { }
 
         public override DeliveryStatus GetDeliveryStatus()
         {
-            return (DeliveryStatus)this.FrameData[5];
+            return (DeliveryStatus)this.GetFrameData()[5];
         }
 
         public byte[] GetDestinationAddress16()
         {
-            return new byte[2] { this.FrameData[2], this.FrameData[3] };
+            return new byte[2] { this.GetFrameData()[2], this.GetFrameData()[3] };
         }
 
         public byte GetTransmitRetryCount()
         {
-            return this.FrameData[4];
+            return this.GetFrameData()[4];
         }
 
         public ZigBeeDiscoveryStatus GetDiscoveryStatus()
         {
-            return (ZigBeeDiscoveryStatus)this.FrameData[6];
+            return (ZigBeeDiscoveryStatus)this.GetFrameData()[6];
         }
     }
 }

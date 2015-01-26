@@ -6,50 +6,50 @@
         {
             public class XBee
             {
-                public static Pin VCC = new Pin(1);
-                public static Pin DOUT = new Pin(2);
-                public static Pin DIN_CONFIG = new Pin(3);
-                public static Pin DO8 = new Pin(4, new byte[2] { 0x44, 0x38 }, new byte[] { 0x01, 0x00 });
-                public static Pin RESET = new Pin(5);
-                public static Pin RSSI_PWM0 = new Pin(6);
-                public static Pin PWM1 = new Pin(7);
-                public static Pin RESERVED = new Pin(8);
-                public static Pin DTR_SLEEP_DIO8 = new Pin(9);
-                public static Pin GND = new Pin(10);
-                public static Pin AD4_DIO4 = new Pin(11, new byte[2] { 0x44, 0x34 }, new byte[] { 0x00, 0x10 });
-                public static Pin CTS_DIO7 = new Pin(12, new byte[2] { 0x44, 0x37 }, new byte[] { 0x00, 0x80 });
-                public static Pin ON_SLEEP = new Pin(13);
-                public static Pin VREF = new Pin(14);
-                public static Pin ASSOCIATE_AD5_DIO5 = new Pin(15, new byte[2] { 0x44, 0x35 }, new byte[] { 0x00, 0x20 });
-                public static Pin RTS_AD6_DIO6 = new Pin(16, new byte[2] { 0x44, 0x36 }, new byte[] { 0x00, 0x40 });
-                public static Pin AD3_DIO3 = new Pin(17, new byte[2] { 0x44, 0x33 }, new byte[] { 0x00, 0x08 });
-                public static Pin AD2_DIO2 = new Pin(18, new byte[2] { 0x44, 0x32 }, new byte[] { 0x00, 0x04 });
-                public static Pin AD1_DIO1 = new Pin(19, new byte[2] { 0x44, 0x31 }, new byte[] { 0x00, 0x02 });
-                public static Pin AD0_DIO0 = new Pin(20, new byte[2] { 0x44, 0x30 }, new byte[] { 0x00, 0x01 });
+                public static readonly Pin VCC = new Pin(1);
+                public static readonly Pin DOUT = new Pin(2);
+                public static readonly Pin DIN_CONFIG = new Pin(3);
+                public static readonly Pin DO8 = new Pin(4, new byte[2] { 0x44, 0x38 }, new byte[] { 0x01, 0x00 });
+                public static readonly Pin RESET = new Pin(5);
+                public static readonly Pin RSSI_PWM0 = new Pin(6);
+                public static readonly Pin PWM1 = new Pin(7);
+                public static readonly Pin RESERVED = new Pin(8);
+                public static readonly Pin DTR_SLEEP_DIO8 = new Pin(9);
+                public static readonly Pin GND = new Pin(10);
+                public static readonly Pin AD4_DIO4 = new Pin(11, new byte[2] { 0x44, 0x34 }, new byte[] { 0x00, 0x10 });
+                public static readonly Pin CTS_DIO7 = new Pin(12, new byte[2] { 0x44, 0x37 }, new byte[] { 0x00, 0x80 });
+                public static readonly Pin ON_SLEEP = new Pin(13);
+                public static readonly Pin VREF = new Pin(14);
+                public static readonly Pin ASSOCIATE_AD5_DIO5 = new Pin(15, new byte[2] { 0x44, 0x35 }, new byte[] { 0x00, 0x20 });
+                public static readonly Pin RTS_AD6_DIO6 = new Pin(16, new byte[2] { 0x44, 0x36 }, new byte[] { 0x00, 0x40 });
+                public static readonly Pin AD3_DIO3 = new Pin(17, new byte[2] { 0x44, 0x33 }, new byte[] { 0x00, 0x08 });
+                public static readonly Pin AD2_DIO2 = new Pin(18, new byte[2] { 0x44, 0x32 }, new byte[] { 0x00, 0x04 });
+                public static readonly Pin AD1_DIO1 = new Pin(19, new byte[2] { 0x44, 0x31 }, new byte[] { 0x00, 0x02 });
+                public static readonly Pin AD0_DIO0 = new Pin(20, new byte[2] { 0x44, 0x30 }, new byte[] { 0x00, 0x01 });
             }
 
             public class ZigBee
             {
-                public static Pin VCC = new Pin(1);
-                public static Pin DOUT = new Pin(2);
-                public static Pin DIN_CONFIG = new Pin(3);
-                public static Pin DIO12 = new Pin(4, new byte[2] { 0x50, 0x32 }, new byte[] { 0x10, 0x00 });
-                public static Pin RESET = new Pin(5);
-                public static Pin RSSI_PWM_DIO10 = new Pin(6, new byte[2] { 0x50, 0x30 }, new byte[] { 0x04, 0x00 });
-                public static Pin PWM_DIO11 = new Pin(7, new byte[2] { 0x50, 0x31 }, new byte[] { 0x08, 0x00 });
-                public static Pin RESERVED = new Pin(8);
-                public static Pin DTR_SLEEP_DIO8 = new Pin(9);
-                public static Pin GND = new Pin(10);
-                public static Pin DIO4 = new Pin(11, new byte[2] { 0x44, 0x34 }, new byte[] { 0x00, 0x10 });
-                public static Pin CTS_DIO7 = new Pin(12, new byte[2] { 0x44, 0x37 }, new byte[] { 0x00, 0x80 });
-                public static Pin ON_SLEEP = new Pin(13);
-                public static Pin VREF = new Pin(14);
-                public static Pin ASSOCIATE_DIO5 = new Pin(15, new byte[2] { 0x44, 0x35 }, new byte[] { 0x00, 0x20 });
-                public static Pin RTS_DIO6 = new Pin(16, new byte[2] { 0x44, 0x36 }, new byte[] { 0x00, 0x40 });
-                public static Pin AD3_DIO3 = new Pin(17, new byte[2] { 0x44, 0x33 }, new byte[] { 0x00, 0x08 });
-                public static Pin AD2_DIO2 = new Pin(18, new byte[2] { 0x44, 0x32 }, new byte[] { 0x00, 0x04 });
-                public static Pin AD1_DIO1 = new Pin(19, new byte[2] { 0x44, 0x31 }, new byte[] { 0x00, 0x02 });
-                public static Pin AD0_DIO0_COMMISSIONONG_BUTTON = new Pin(20, new byte[2] { 0x44, 0x30 }, new byte[] { 0x00, 0x01 });
+                public static readonly Pin VCC = new Pin(1);
+                public static readonly Pin DOUT = new Pin(2);
+                public static readonly Pin DIN_CONFIG = new Pin(3);
+                public static readonly Pin DIO12 = new Pin(4, new byte[2] { 0x50, 0x32 }, new byte[] { 0x10, 0x00 });
+                public static readonly Pin RESET = new Pin(5);
+                public static readonly Pin RSSI_PWM_DIO10 = new Pin(6, new byte[2] { 0x50, 0x30 }, new byte[] { 0x04, 0x00 });
+                public static readonly Pin PWM_DIO11 = new Pin(7, new byte[2] { 0x50, 0x31 }, new byte[] { 0x08, 0x00 });
+                public static readonly Pin RESERVED = new Pin(8);
+                public static readonly Pin DTR_SLEEP_DIO8 = new Pin(9);
+                public static readonly Pin GND = new Pin(10);
+                public static readonly Pin DIO4 = new Pin(11, new byte[2] { 0x44, 0x34 }, new byte[] { 0x00, 0x10 });
+                public static readonly Pin CTS_DIO7 = new Pin(12, new byte[2] { 0x44, 0x37 }, new byte[] { 0x00, 0x80 });
+                public static readonly Pin ON_SLEEP = new Pin(13);
+                public static readonly Pin VREF = new Pin(14);
+                public static readonly Pin ASSOCIATE_DIO5 = new Pin(15, new byte[2] { 0x44, 0x35 }, new byte[] { 0x00, 0x20 });
+                public static readonly Pin RTS_DIO6 = new Pin(16, new byte[2] { 0x44, 0x36 }, new byte[] { 0x00, 0x40 });
+                public static readonly Pin AD3_DIO3 = new Pin(17, new byte[2] { 0x44, 0x33 }, new byte[] { 0x00, 0x08 });
+                public static readonly Pin AD2_DIO2 = new Pin(18, new byte[2] { 0x44, 0x32 }, new byte[] { 0x00, 0x04 });
+                public static readonly Pin AD1_DIO1 = new Pin(19, new byte[2] { 0x44, 0x31 }, new byte[] { 0x00, 0x02 });
+                public static readonly Pin AD0_DIO0_COMMISSIONONG_BUTTON = new Pin(20, new byte[2] { 0x44, 0x30 }, new byte[] { 0x00, 0x01 });
             }
 
             private byte pinNum;

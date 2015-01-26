@@ -3,10 +3,10 @@ using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Response
 {
-    public abstract class RxResponseBase : ResponseBase,IRxResponse
+    public abstract class RxResponseBase : ResponseBase
     {
-        public RxResponseBase(ResponseBase Frame) 
-        : base(Frame)
+        public RxResponseBase(APIFrame frame)
+            : base(frame)
         { }
 
         public abstract ReceiveStatus GetReceiveStatus();
@@ -14,5 +14,7 @@ namespace SmartLab.XBee.Response
         public abstract DeviceAddress GetRemoteDevice();
 
         public abstract byte[] GetReceivedData();
+
+        public abstract int GetReceivedDataOffset();
     }
 }

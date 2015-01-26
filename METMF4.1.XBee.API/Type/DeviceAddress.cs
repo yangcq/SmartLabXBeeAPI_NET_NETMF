@@ -8,7 +8,6 @@ namespace SmartLab.XBee.Type
 
         // total 10 bytes
         // IEEE 64 + 16bit networ address
-        // 4 bytes MSB + 4 bytes LSB + 2 NET
         protected byte[] value;
 
         public DeviceAddress() 
@@ -21,10 +20,6 @@ namespace SmartLab.XBee.Type
             this.value = Address64.CombineArray(NET16);
         }
 
-        /// <summary>
-        /// 4 bytes MSB + 4 bytes LSB + 2 NET
-        /// </summary>
-        /// <param name="value"></param>
         public DeviceAddress(byte[] value) 
         {
             this.value = value;
@@ -34,18 +29,9 @@ namespace SmartLab.XBee.Type
         {
             value = new byte[10];
 
-            value[0] = (byte)(SerialNumberHigh >> 24);
-            value[1] = (byte)(SerialNumberHigh >> 16);
-            value[2] = (byte)(SerialNumberHigh >> 8);
-            value[3] = (byte)SerialNumberHigh;
-
-            value[4] = (byte)(SerialNumberLow >> 24);
-            value[5] = (byte)(SerialNumberLow >> 16);
-            value[6] = (byte)(SerialNumberLow >> 8);
-            value[7] = (byte)SerialNumberLow;
-
-            value[8] = (byte)(NetworkAddress >> 8);
-            value[9] = (byte)NetworkAddress;
+            SetSerialNumberHigh(SerialNumberHigh);
+            SetSerialNumberLow(SerialNumberLow);
+            SetNetworkAddress(NetworkAddress);
         }
 
         public int GetSerialNumberHigh()
@@ -55,7 +41,7 @@ namespace SmartLab.XBee.Type
 
         public int GetSerialNumberLow()
         {
-            return (value[4] << 24) | (value[5] << 16) | (value[5] << 8) | value[7];
+            return (value[4] << 24) | (value[5] << 16) | (value[6] << 8) | value[7];
         }
 
         public int GetNetworkAddress()
@@ -63,6 +49,33 @@ namespace SmartLab.XBee.Type
             return (value[8] << 8) | value[9];
         }
 
+        public void SetSerialNumberHigh(int SerialNumberHigh)
+        {
+            value[0] = (byte)(SerialNumberHigh >> 24);
+            value[1] = (byte)(SerialNumberHigh >> 16);
+            value[2] = (byte)(SerialNumberHigh >> 8);
+            value[3] = (byte)SerialNumberHigh;
+        }
+
+        public void SetSerialNumberLow(int SerialNumberLow)
+        {
+            value[4] = (byte)(SerialNumberLow >> 24);
+            value[5] = (byte)(SerialNumberLow >> 16);
+            value[6] = (byte)(SerialNumberLow >> 8);
+            value[7] = (byte)SerialNumberLow;
+        }
+
+        public void SetNetworkAddress(int NetworkAddress)
+        {
+            value[8] = (byte)(NetworkAddress >> 8);
+            value[9] = (byte)NetworkAddress;
+        }
+
+        /// <summary>
+        /// total 10 bytes
+        /// IEEE 64 + 16bit networ address
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetAddressValue()
         {
             return value;

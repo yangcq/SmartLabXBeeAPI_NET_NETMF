@@ -5,33 +5,35 @@ namespace SmartLab.XBee.Response
 {
     public class XBeeIODataSampleRx16Response : XBeeIODataSampleRxBase
     {
-        public XBeeIODataSampleRx16Response(ResponseBase Frame)
-            : base(Frame)
+        public XBeeIODataSampleRx16Response(APIFrame frame)
+            : base(frame)
         { }
 
         public override int GetRSSI()
         {
-            return FrameData[3] * -1;
+            return GetFrameData()[3] * -1;
         }
 
         public override IOSamples GetIOSamples()
         {
-            return SamplesParse(this.FrameData.ExtractRangeFromArray(5, this.Length - 5));
+            return SamplesParse(this.GetFrameData(), 5);
         }
 
         public override ReceiveStatus GetReceiveStatus()
         {
-            return (ReceiveStatus)this.FrameData[4];
+            return (ReceiveStatus)this.GetFrameData()[4];
         }
 
         public override DeviceAddress GetRemoteDevice()
         {
-            return new DeviceAddress(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, FrameData[1], FrameData[2] });
+            return new DeviceAddress(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, GetFrameData()[1], GetFrameData()[2] });
         }
 
         public override byte[] GetReceivedData()
         {
-            return this.FrameData.ExtractRangeFromArray(3, this.Length - 3);
+            return this.GetFrameData().ExtractRangeFromArray(3, this.GetPosition() - 3);
         }
+
+        public override int GetReceivedDataOffset() { return 3; }
     }
 }

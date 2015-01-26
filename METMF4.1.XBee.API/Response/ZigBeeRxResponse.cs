@@ -5,23 +5,25 @@ namespace SmartLab.XBee.Response
 {
     public class ZigBeeRxResponse : ZigBeeRxBase
     {
-        public ZigBeeRxResponse(ResponseBase Frame)
-            : base(Frame)
+        public ZigBeeRxResponse(APIFrame frame)
+            : base(frame)
         { }
 
         public override ReceiveStatus GetReceiveStatus()
         {
-            return (ReceiveStatus)this.FrameData[11];
+            return (ReceiveStatus)this.GetFrameData()[11];
         }
 
         public override byte[] GetReceivedData()
         {
-            return this.FrameData.ExtractRangeFromArray(12, this.Length - 12);
+            return this.GetFrameData().ExtractRangeFromArray(12, this.GetPosition() - 12);
         }
 
         public override DeviceAddress GetRemoteDevice()
         {
-            return new DeviceAddress(FrameData.ExtractRangeFromArray(1, 10));
+            return new DeviceAddress(GetFrameData().ExtractRangeFromArray(1, 10));
         }
+
+        public override int GetReceivedDataOffset() { return 12; }
     }
 }

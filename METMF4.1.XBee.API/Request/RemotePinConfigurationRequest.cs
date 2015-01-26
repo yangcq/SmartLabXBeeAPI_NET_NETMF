@@ -6,16 +6,9 @@ namespace SmartLab.XBee.Request
     public class RemotePinConfigurationRequest : RemoteATCommandRequest
     {
         public RemotePinConfigurationRequest(byte FrameID, DeviceAddress RemoteDevice, Device.Pin Pin, Device.Pin.Functions Function)
-            : base(FrameID, RemoteDevice, RemoteCommandOptions.ApplyChanges, new ATCommand(Pin.COMMAND), new byte[] { (byte)Function })
+            : base(FrameID, RemoteDevice, new ATCommand(Pin.COMMAND), RemoteCommandOptions.ApplyChanges, new byte[] { (byte)Function })
         { }
 
-        public RemotePinConfigurationRequest(DeviceAddress RemoteDevice, Device.Pin Pin, Device.Pin.Functions Function)
-            : base(RemoteDevice, RemoteCommandOptions.ApplyChanges, new ATCommand(Pin.COMMAND), new byte[] { (byte)Function })
-        { }
-
-        public void SetPinFunction(Device.Pin.Functions Functions)
-        {
-            SetParameter(new byte[] { (byte)Functions });
-        }
+        public void SetPinFunction(Device.Pin.Functions Functions) { this.SetContent(15, (byte)Functions); }
     }
 }

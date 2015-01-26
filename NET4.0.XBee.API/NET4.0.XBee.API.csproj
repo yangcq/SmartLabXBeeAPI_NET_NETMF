@@ -12,6 +12,7 @@
     <AssemblyName>NET4.0.XBee.API</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NET4.0.Utility">
-      <HintPath>..\NET4.0.Utility\bin\Release\NET4.0.Utility.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -66,7 +64,6 @@
     <Compile Include="Response\ResponseBase.cs" />
     <Compile Include="Response\RSSIInterface.cs" />
     <Compile Include="Response\RxResponseBase.cs" />
-    <Compile Include="Response\RxResponseInterface.cs" />
     <Compile Include="Response\SensorReadResponse.cs" />
     <Compile Include="Response\TxStatusBase.cs" />
     <Compile Include="Response\TxStatusInterface.cs" />
@@ -98,6 +95,12 @@
     <Compile Include="Type\XBeeDiscoverAddress.cs" />
     <Compile Include="Type\ZigBeeDiscoverAddress.cs" />
     <Compile Include="XBeeAPI.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NET4.0.Utility\NET4.0.Utility.csproj">
+      <Project>{2093A9C2-0EA4-4554-A07F-C6EA4188F940}</Project>
+      <Name>NET4.0.Utility</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

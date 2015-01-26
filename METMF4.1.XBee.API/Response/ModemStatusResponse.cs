@@ -1,16 +1,17 @@
 using SmartLab.XBee.Status;
+using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Response
 {
     public class ModemStatusResponse : ResponseBase
     {
-        public ModemStatusResponse(ResponseBase Frame)
-            : base(Frame)
+        public ModemStatusResponse(APIFrame frame)
+            : base(frame)
         { }
 
         public ModemStatus GetModemStatus()
         {
-            return (ModemStatus)this.FrameData[1];
+            return (ModemStatus)this.GetFrameData()[1];
         }
     }
 }

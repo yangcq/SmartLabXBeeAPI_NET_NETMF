@@ -8,10 +8,12 @@ namespace SmartLab.XBee.Request
             : base(length, identifier, FrameID) 
         { } 
         
-        public abstract void SetAppleChanges(bool AppleChanges);
+        public abstract void SetAppleChanges(bool appleChanges);
 
-        public abstract void SetCommand(ATCommand Command);
+        public abstract void SetCommand(ATCommand command);
 
-        public abstract void SetParameter(byte[] Parameter);
+        public abstract void SetParameter(byte[] parameter);
+
+        public abstract void SetParameter(byte[] parameter, int offset, int length);
     }
 }

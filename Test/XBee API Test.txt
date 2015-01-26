@@ -1,0 +1,22 @@
+Type, Send, SendWithResponse
+tx16, OK, OK
+tx64, OK, OK
+ATCommand,OK, OK
+RemoteAT, OK, OK
+ZigBeeTx, OK, OK
+ZigBeeExp OK, OK
+
+Response
+Moden, OK
+ATCommand, OK
+RemoteAT, OK
+RemoteAT, OK
+ZigBeeRx, OK
+XBeeTx, OK
+ZigBeeTx, OK
+XBeeRx16, OK
+XBeeRx64, OK
+IO16, OK
+IO64, OK
+ZigBeeIO, OK
+NodeJoin, OK

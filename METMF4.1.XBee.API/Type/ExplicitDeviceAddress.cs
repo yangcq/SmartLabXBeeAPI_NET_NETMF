@@ -6,6 +6,8 @@ namespace SmartLab.XBee.Type
         // 1 byte of SourceEndpoint + 1 byte of DestinationEndpoint + 2 bytes of ClusterID + 2 bytes of ProfileID
         private byte[] ExplicitValue;
 
+        public ExplicitDeviceAddress() { this.ExplicitValue = new byte[6]; }
+
         public ExplicitDeviceAddress (byte[] AddressValue, byte[] ExplicitValue )
             : base(AddressValue)
         {
@@ -25,6 +27,11 @@ namespace SmartLab.XBee.Type
             ExplicitValue[5] = (byte)ProfileID;
         }
 
+        /// <summary>
+        /// total 6 bytes
+        /// 1 byte of SourceEndpoint + 1 byte of DestinationEndpoint + 2 bytes of ClusterID + 2 bytes of ProfileID
+        /// </summary>
+        /// <returns></returns>
         public byte[] GetExplicitValue()
         {
             return ExplicitValue;

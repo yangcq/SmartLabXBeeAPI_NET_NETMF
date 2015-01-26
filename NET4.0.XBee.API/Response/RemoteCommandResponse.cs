@@ -5,30 +5,30 @@ namespace SmartLab.XBee.Response
 {
     public class RemoteCommandResponse : CommandResponseBase
     {
-        public RemoteCommandResponse(ResponseBase Frame)
-            : base(Frame)
+        public RemoteCommandResponse(APIFrame frame)
+            : base(frame)
         { }
 
         public override ATCommand GetRequestCommand()
         {
-            return new ATCommand(new byte[2] { this.FrameData[12], this.FrameData[13] });
+            return new ATCommand(new byte[2] { this.GetFrameData()[12], this.GetFrameData()[13] });
         }
 
         public override CommandStatus GetCommandStatus()
         {
-            return (CommandStatus)this.FrameData[14];
+            return (CommandStatus)this.GetFrameData()[14];
         }
 
         public override byte[] GetParameter()
         {
-            if (this.Length > 15)
-                return this.FrameData.ExtractRangeFromArray(15, this.Length - 15);
+            if (this.GetPosition() > 15)
+                return this.GetFrameData().ExtractRangeFromArray(15, this.GetPosition() - 15);
             else return null;
         }
 
         public DeviceAddress GetRemoteDevice()
         {
-            return new DeviceAddress(FrameData.ExtractRangeFromArray(2, 10));
+            return new DeviceAddress(GetFrameData().ExtractRangeFromArray(2, 10));
         }
     }
 }
