@@ -1,31 +1,45 @@
 using SmartLab.XBee.Response;
 
-namespace SmartLab.XBee.Type
+namespace SmartLab.XBee.Device
 {
-    public class DeviceAddress
+    public class Address
     {
-        public static DeviceAddress BROADCAST = new DeviceAddress(0x00000000, 0x0000FFFF, 0xFFFE);
+        public static readonly Address BROADCAST_ZIGBEE = new Address(0x00000000, 0x0000FFFF, 0xFFFE);
+        public static readonly Address BROADCAST_XBEE = new Address(0x00000000, 0x00000000, 0xFFFF);
 
         // total 10 bytes
         // IEEE 64 + 16bit networ address
         protected byte[] value;
 
-        public DeviceAddress() 
+        /// <summary>
+        /// create empty address : 0x00000000 0x00000000 0x0000
+        /// this is the default ZigBee Coordinatior
+        /// </summary>
+        public Address()
         {
-            value = new byte[10]; 
+            value = new byte[10];
         }
 
-        public DeviceAddress(byte[] Address64, byte[] NET16)
+        /// <summary>
+        /// create address from byte[8 + 2] value : 8 bytes of ieee + 2 bytes network
+        /// </summary>
+        /// <param name="Address64"></param>
+        /// <param name="NET16"></param>
+        public Address(byte[] Address64, byte[] NET16)
         {
             this.value = Address64.CombineArray(NET16);
         }
 
-        public DeviceAddress(byte[] value) 
+        /// <summary>
+        /// create address from byte[10] value : 8 bytes of ieee follow 2 bytes network
+        /// </summary>
+        /// <param name="value"></param>
+        public Address(byte[] value)
         {
             this.value = value;
         }
 
-        public DeviceAddress(int SerialNumberHigh, int SerialNumberLow, int NetworkAddress)
+        public Address(int SerialNumberHigh, int SerialNumberLow, int NetworkAddress)
         {
             value = new byte[10];
 
@@ -86,13 +100,13 @@ namespace SmartLab.XBee.Type
         /// </summary>
         /// <param name="response">muset be non null parameter</param>
         /// <returns></returns>
-        public static DeviceAddress Parse(ICommandResponse response)
+        public static Address Parse(ICommandResponse response)
         {
             byte[] message = response.GetParameter();
             if (message != null)
                 if (response.GetRequestCommand().ToString().ToUpper() == "ND")
                 {
-                    DeviceAddress device = new DeviceAddress();
+                    Address device = new Address();
 
                     device.value[0] = message[2];
                     device.value[1] = message[3];
@@ -113,14 +127,22 @@ namespace SmartLab.XBee.Type
 
         public override bool Equals(object obj)
         {
-            if (obj.GetType() == typeof(DeviceAddress))
+            if (obj == null)
                 return false;
 
-            for (int i = 0; i < 10; i++)
-                if (this.value[i] != ((DeviceAddress)obj).value[i])
-                    return false;
+            Address address = obj as Address;
+            if (address == null)
+                return false;
 
-            return true;
+            return this.GetSerialNumberHigh() == address.GetSerialNumberHigh() && this.GetSerialNumberLow() == address.GetSerialNumberLow();
+        }
+
+        public bool Equals(Address address)
+        {
+            if (address == null)
+                return false;
+
+            return this.GetSerialNumberHigh() == address.GetSerialNumberHigh() && this.GetSerialNumberLow() == address.GetSerialNumberLow();
         }
     }
 }

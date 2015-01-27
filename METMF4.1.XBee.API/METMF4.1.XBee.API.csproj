@@ -31,6 +31,13 @@
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
+    <Compile Include="APIFrame.cs" />
+    <Compile Include="Device\Address.cs" />
+    <Compile Include="Device\ExplicitAddress.cs" />
+    <Compile Include="Device\Pin.cs" />
+    <Compile Include="Device\XBeeDiscoverAddress.cs" />
+    <Compile Include="Device\ZigBeeDiscoverAddress.cs" />
+    <Compile Include="IOSamples.cs" />
     <Compile Include="Options\OptionsBase.cs" />
     <Compile Include="Options\RemoteCommandOptions.cs" />
     <Compile Include="Options\TransmitOptions.cs" />
@@ -80,16 +87,12 @@
     <Compile Include="Status\ModemStatus.cs" />
     <Compile Include="Status\ReceiveStatus.cs" />
     <Compile Include="Status\ZigBeeDiscoveryStatus.cs" />
-    <Compile Include="Type\APIFrame.cs" />
     <Compile Include="Type\APIMode.cs" />
     <Compile Include="Type\API_IDENTIFIER.cs" />
     <Compile Include="Type\ATCommand.cs" />
-    <Compile Include="Type\Device.cs" />
-    <Compile Include="Type\DeviceAddress.cs" />
-    <Compile Include="Type\ExplicitDeviceAddress.cs" />
-    <Compile Include="Type\IOSamples.cs" />
-    <Compile Include="Type\XBeeDiscoverAddress.cs" />
-    <Compile Include="Type\ZigBeeDiscoverAddress.cs" />
+    <Compile Include="Type\DeviceType.cs" />
+    <Compile Include="Type\OneWireSensor.cs" />
+    <Compile Include="Type\SourceEvent.cs" />
     <Compile Include="XBeeAPI.cs" />
   </ItemGroup>
   <ItemGroup>

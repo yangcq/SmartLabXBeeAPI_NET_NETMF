@@ -1,21 +1,33 @@
 ﻿using System.Text;
 using SmartLab.XBee.Response;
+using SmartLab.XBee.Type;
 
-namespace SmartLab.XBee.Type
+namespace SmartLab.XBee.Device
 {
-    public class XBeeDiscoverAddress : DeviceAddress
+    public class ZigBeeDiscoverAddress : XBeeDiscoverAddress
     {
-        private int RSSI;
-        protected string NIString;
+        // total 8 bytes
+        // 2 bytes of ParentAddress16 + 1 byte of Type + 1 byte of Status (Reserved) + 2 bytes of ProfileID + 2 bytes of ManufacturerID
+        private byte[] zigbeeAdditional;
 
-        public int GetRSSI()
+        public int ManufacturerID()
         {
-            return RSSI;
+            return (zigbeeAdditional[6] << 8) | zigbeeAdditional[7];
         }
 
-        public string GetNIString()
+        public int GetProfileID()
         {
-            return NIString;
+            return (zigbeeAdditional[4] << 8) | zigbeeAdditional[5];
+        }
+
+        public int GetParentNetworkAddress16()
+        {
+            return (zigbeeAdditional[0] << 8) | zigbeeAdditional[1];
+        }
+
+        public DeviceType GetDeviceType()
+        {
+            return (DeviceType)zigbeeAdditional[2];
         }
 
         /// <summary>
@@ -23,13 +35,14 @@ namespace SmartLab.XBee.Type
         /// </summary>
         /// <param name="response">muset be non null parameter</param>
         /// <returns></returns>
-        public static new DeviceAddress Parse(ICommandResponse response)
+        public static new ZigBeeDiscoverAddress Parse(ICommandResponse response)
         {
             byte[] message = response.GetParameter();
             if (message != null)
                 if (response.GetRequestCommand().ToString().ToUpper() == "ND")
                 {
-                    XBeeDiscoverAddress device = new XBeeDiscoverAddress();
+                    int offset = message.Length - 8;
+                    ZigBeeDiscoverAddress device = new ZigBeeDiscoverAddress();
 
                     device.value[0] = message[2];
                     device.value[1] = message[3];
@@ -43,13 +56,13 @@ namespace SmartLab.XBee.Type
                     device.value[8] = message[0];
                     device.value[9] = message[1];
 
-                    device.RSSI = message[10] * -1;
-
                     try
                     {
-                        device.NIString = new string(UTF8Encoding.UTF8.GetChars(message.ExtractRangeFromArray(11, message.Length - 11)));
+                        device.NIString = new string(UTF8Encoding.UTF8.GetChars(message.ExtractRangeFromArray(10, message.Length - 18)));
                     }
                     catch { device.NIString = "error while encoding"; }
+
+                    device.zigbeeAdditional = message.ExtractRangeFromArray(offset, 8);
 
                     return device;
                 }

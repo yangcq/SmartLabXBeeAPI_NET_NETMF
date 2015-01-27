@@ -1,5 +1,6 @@
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Response
 {
@@ -19,9 +20,9 @@ namespace SmartLab.XBee.Response
             return this.GetFrameData().ExtractRangeFromArray(12, this.GetPosition() - 12);
         }
 
-        public override DeviceAddress GetRemoteDevice()
+        public override Address GetRemoteDevice()
         {
-            return new DeviceAddress(GetFrameData().ExtractRangeFromArray(1, 10));
+            return new Address(GetFrameData().ExtractRangeFromArray(1, 10));
         }
 
         public override int GetReceivedDataOffset() { return 12; }

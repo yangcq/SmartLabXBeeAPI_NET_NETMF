@@ -1,20 +1,20 @@
-namespace SmartLab.XBee.Type
+namespace SmartLab.XBee.Device
 {
-    public class ExplicitDeviceAddress : DeviceAddress
+    public class ExplicitAddress : Address
     {
         // total 6 bytes
         // 1 byte of SourceEndpoint + 1 byte of DestinationEndpoint + 2 bytes of ClusterID + 2 bytes of ProfileID
         private byte[] ExplicitValue;
 
-        public ExplicitDeviceAddress() { this.ExplicitValue = new byte[6]; }
+        public ExplicitAddress() { this.ExplicitValue = new byte[6]; }
 
-        public ExplicitDeviceAddress (byte[] AddressValue, byte[] ExplicitValue )
+        public ExplicitAddress (byte[] AddressValue, byte[] ExplicitValue )
             : base(AddressValue)
         {
             this.ExplicitValue = ExplicitValue;
         }
 
-        public ExplicitDeviceAddress(int SerialNumberHigh, int SerialNumberLow, int NetworkAddress, int SourceEndpoint, int DestinationEndpoint, int ClusterID, int ProfileID)
+        public ExplicitAddress(int SerialNumberHigh, int SerialNumberLow, int NetworkAddress, int SourceEndpoint, int DestinationEndpoint, int ClusterID, int ProfileID)
             : base(SerialNumberHigh, SerialNumberLow, NetworkAddress)
         {
             ExplicitValue = new byte[6];

@@ -1,5 +1,6 @@
 using SmartLab.XBee.Options;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Request
 {
@@ -15,6 +16,6 @@ namespace SmartLab.XBee.Request
 
         public abstract void SetTransmitOptions(OptionsBase transmitOptions);
 
-        public abstract void SetRemoteAddress(DeviceAddress remoteAddress);
+        public abstract void SetRemoteAddress(Address remoteAddress);
     }
 }

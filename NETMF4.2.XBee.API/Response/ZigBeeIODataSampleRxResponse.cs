@@ -1,6 +1,7 @@
 using System.Collections;
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Response
 {
@@ -76,9 +77,9 @@ namespace SmartLab.XBee.Response
             return new IOSamples(Analog, Digital, SUPPLY_VOLTAGE);
         }
 
-        public override DeviceAddress GetRemoteDevice()
+        public override Address GetRemoteDevice()
         {
-            return new DeviceAddress(this.GetFrameData().ExtractRangeFromArray(1, 10));
+            return new Address(this.GetFrameData().ExtractRangeFromArray(1, 10));
         }
 
         public override ReceiveStatus GetReceiveStatus()

@@ -1,6 +1,7 @@
 using System;
 using SmartLab.XBee.Options;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Request
 {
@@ -15,7 +16,7 @@ namespace SmartLab.XBee.Request
         /// <param name="RFData"></param>
         /// <param name="offset"></param>
         /// <param name="length"></param>
-        public XBeeTx16Request(byte frameID, DeviceAddress remoteAddress, OptionsBase transmitOptions, byte[] payload)
+        public XBeeTx16Request(byte frameID, Address remoteAddress, OptionsBase transmitOptions, byte[] payload)
             : this(frameID, remoteAddress, transmitOptions, payload, 0, payload.Length)
         { }
 
@@ -28,7 +29,7 @@ namespace SmartLab.XBee.Request
         /// <param name="RFData"></param>
         /// <param name="offset"></param>
         /// <param name="length"></param>
-        public XBeeTx16Request(byte frameID, DeviceAddress remoteAddress, OptionsBase transmitOptions, byte[] payload, int offset, int length)
+        public XBeeTx16Request(byte frameID, Address remoteAddress, OptionsBase transmitOptions, byte[] payload, int offset, int length)
             : base(3 + payload.Length, API_IDENTIFIER.Tx16_Request, frameID)
         {
             this.SetContent((byte)(remoteAddress.GetNetworkAddress() >> 8));
@@ -51,7 +52,7 @@ namespace SmartLab.XBee.Request
         /// the ieee 64 bit address is ignored
         /// </summary>
         /// <param name="networkAddress"></param>
-        public override void SetRemoteAddress(DeviceAddress remoteAddress)
+        public override void SetRemoteAddress(Address remoteAddress)
         {
             this.SetContent(2, (byte)(remoteAddress.GetNetworkAddress() >> 8));
             this.SetContent(3, (byte)(remoteAddress.GetNetworkAddress()));

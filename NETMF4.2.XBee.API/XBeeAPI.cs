@@ -6,6 +6,7 @@ using SmartLab.XBee.Type;
 using System.IO;
 using System.Threading;
 using SmartLab.XBee.Options;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee
 {
@@ -156,9 +157,9 @@ namespace SmartLab.XBee
 
         #region Advance Function
 
-        public XBeeTxStatusResponse SendXBeeTx16(DeviceAddress remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx16(remoteAddress, option, payload, 0, payload.Length); }
+        public XBeeTxStatusResponse SendXBeeTx16(Address remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx16(remoteAddress, option, payload, 0, payload.Length); }
 
-        public XBeeTxStatusResponse SendXBeeTx16(DeviceAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        public XBeeTxStatusResponse SendXBeeTx16(Address remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -189,9 +190,9 @@ namespace SmartLab.XBee
             return new XBeeTxStatusResponse(safeResponse);
         }
 
-        public XBeeTxStatusResponse SendXBeeTx64(DeviceAddress remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx64(remoteAddress, option, payload, 0, payload.Length); }
+        public XBeeTxStatusResponse SendXBeeTx64(Address remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx64(remoteAddress, option, payload, 0, payload.Length); }
 
-        public XBeeTxStatusResponse SendXBeeTx64(DeviceAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        public XBeeTxStatusResponse SendXBeeTx64(Address remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -261,7 +262,7 @@ namespace SmartLab.XBee
             return new ATCommandResponse(safeResponse);
         }
 
-        public RemoteCommandResponse SendRemoteATCommand(DeviceAddress remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter = null)
+        public RemoteCommandResponse SendRemoteATCommand(Address remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter = null)
         {
             if (parameter == null)
                 return SendRemoteATCommand(remoteAddress, command, transmitOptions, parameter, 0, 0);
@@ -269,7 +270,7 @@ namespace SmartLab.XBee
                 return SendRemoteATCommand(remoteAddress, command, transmitOptions, parameter, 0, parameter.Length);
         }
 
-        public RemoteCommandResponse SendRemoteATCommand(DeviceAddress remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter, int parameterOffset, int parameterLength)
+        public RemoteCommandResponse SendRemoteATCommand(Address remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter, int parameterOffset, int parameterLength)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -303,9 +304,9 @@ namespace SmartLab.XBee
             return new RemoteCommandResponse(safeResponse);
         }
 
-        public ZigBeeTxStatusResponse SendZigBeeTx(DeviceAddress remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeTx(remoteAddress, option, payload, 0, payload.Length); }
+        public ZigBeeTxStatusResponse SendZigBeeTx(Address remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeTx(remoteAddress, option, payload, 0, payload.Length); }
 
-        public ZigBeeTxStatusResponse SendZigBeeTx(DeviceAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        public ZigBeeTxStatusResponse SendZigBeeTx(Address remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -336,9 +337,9 @@ namespace SmartLab.XBee
             return new ZigBeeTxStatusResponse(safeResponse);
         }
 
-        public ZigBeeTxStatusResponse SendZigBeeExplicitTx(ExplicitDeviceAddress remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeExplicitTx(remoteAddress, option, payload, 0, payload.Length); }
+        public ZigBeeTxStatusResponse SendZigBeeExplicitTx(ExplicitAddress remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeExplicitTx(remoteAddress, option, payload, 0, payload.Length); }
 
-        public ZigBeeTxStatusResponse SendZigBeeExplicitTx(ExplicitDeviceAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        public ZigBeeTxStatusResponse SendZigBeeExplicitTx(ExplicitAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -369,6 +370,14 @@ namespace SmartLab.XBee
 
             return new ZigBeeTxStatusResponse(safeResponse);
         }
+
+        public ATCommandResponse SetPinFunction(Pin pin, Pin.Functions function) { return SendATCommand(new ATCommand(pin.COMMAND), true, new byte[] { (byte)function }); }
+
+        public ATCommandResponse SetIODetection(Pin[] pins) { return SendATCommand(ATCommand.Digital_IO_Change_Detection, true, Pin.IOChangeDetectionConfiguration(pins)); }
+
+        public RemoteCommandResponse SetRemotePinFunction(Address remoteAddress, Pin pin, Pin.Functions function) { return SendRemoteATCommand(remoteAddress, new ATCommand(pin.COMMAND), RemoteCommandOptions.ApplyChanges, new byte[] { (byte)function }); }
+
+        public RemoteCommandResponse SetRemoteIODetection(Address remoteAddress, Pin[] pins) { return SendRemoteATCommand(remoteAddress, ATCommand.Digital_IO_Change_Detection, RemoteCommandOptions.ApplyChanges, Pin.IOChangeDetectionConfiguration(pins)); }
 
         #endregion
 

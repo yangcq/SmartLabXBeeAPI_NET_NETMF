@@ -1,11 +1,12 @@
 ﻿using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Request
 {
     public class IOCDetectionConfigRequest : ATCommandRequest
     {
-        public IOCDetectionConfigRequest(byte FrameID, Device.Pin[] Pins)
-            : base(FrameID, ATCommands.Digital_IO_Change_Detection, Device.Pin.IOChangeDetectionConfiguration(Pins))
+        public IOCDetectionConfigRequest(byte frameID, Pin[] pins)
+            : base(frameID, ATCommand.Digital_IO_Change_Detection, Pin.IOChangeDetectionConfiguration(pins))
         { }
     }
 }

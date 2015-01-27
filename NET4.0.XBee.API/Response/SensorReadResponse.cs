@@ -1,5 +1,6 @@
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Response
 {
@@ -16,9 +17,9 @@ namespace SmartLab.XBee.Response
             return GetFrameData().ExtractRangeFromArray(12, GetPosition() - 12);
         }
 
-        public override DeviceAddress GetRemoteDevice()
+        public override Address GetRemoteDevice()
         {
-            return new DeviceAddress(GetFrameData().ExtractRangeFromArray(1, 10));
+            return new Address(GetFrameData().ExtractRangeFromArray(1, 10));
         }
 
         public override ReceiveStatus GetReceiveStatus()
@@ -26,9 +27,9 @@ namespace SmartLab.XBee.Response
             return (ReceiveStatus)this.GetFrameData()[11];
         }
 
-        public Device.OneWireSensors GetOneWireSensor()
+        public OneWireSensor GetOneWireSensor()
         {
-            return (Device.OneWireSensors)this.GetFrameData()[12];
+            return (OneWireSensor)this.GetFrameData()[12];
         }
 
         public int GetAD0()

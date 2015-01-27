@@ -1,6 +1,7 @@
 using System;
+using SmartLab.XBee.Type;
 
-namespace SmartLab.XBee.Type
+namespace SmartLab.XBee
 {
     public class APIFrame
     {

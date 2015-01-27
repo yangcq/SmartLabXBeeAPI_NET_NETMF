@@ -1,5 +1,6 @@
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Response
 {
@@ -26,9 +27,9 @@ namespace SmartLab.XBee.Response
             else return null;
         }
 
-        public DeviceAddress GetRemoteDevice()
+        public Address GetRemoteDevice()
         {
-            return new DeviceAddress(GetFrameData().ExtractRangeFromArray(2, 10));
+            return new Address(GetFrameData().ExtractRangeFromArray(2, 10));
         }
     }
 }

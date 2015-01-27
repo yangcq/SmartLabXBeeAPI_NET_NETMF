@@ -1,5 +1,6 @@
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Response
 {
@@ -11,7 +12,7 @@ namespace SmartLab.XBee.Response
 
         public abstract ReceiveStatus GetReceiveStatus();
 
-        public abstract DeviceAddress GetRemoteDevice();
+        public abstract Address GetRemoteDevice();
 
         public abstract byte[] GetReceivedData();
 

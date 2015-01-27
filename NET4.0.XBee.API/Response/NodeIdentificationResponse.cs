@@ -1,6 +1,7 @@
 using System.Text;
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Response
 {
@@ -24,14 +25,14 @@ namespace SmartLab.XBee.Response
             return (ReceiveStatus)this.GetFrameData()[11];
         }
 
-        public override DeviceAddress GetRemoteDevice()
+        public override Address GetRemoteDevice()
         {
-            return new DeviceAddress(GetFrameData().ExtractRangeFromArray(14, 8), GetFrameData().ExtractRangeFromArray(12, 2));
+            return new Address(GetFrameData().ExtractRangeFromArray(14, 8), GetFrameData().ExtractRangeFromArray(12, 2));
         }
 
-        public DeviceAddress GetSenderDevice()
+        public Address GetSenderDevice()
         {
-            return new DeviceAddress(GetFrameData().ExtractRangeFromArray(1, 10));
+            return new Address(GetFrameData().ExtractRangeFromArray(1, 10));
         }
 
         public string GetNIString()
@@ -44,14 +45,14 @@ namespace SmartLab.XBee.Response
             return this.GetFrameData()[offset] << 8 | this.GetFrameData()[offset + 1];
         }
 
-        public Device.Type GetDeviceType()
+        public DeviceType GetDeviceType()
         {
-            return (Device.Type)this.GetFrameData()[offset + 2];
+            return (DeviceType)this.GetFrameData()[offset + 2];
         }
 
-        public Device.SourceEvent GetSourceEvent()
+        public SourceEvent GetSourceEvent()
         {
-            return (Device.SourceEvent)this.GetFrameData()[offset + 3];
+            return (SourceEvent)this.GetFrameData()[offset + 3];
         }
 
         public int GetDigiProfileID()

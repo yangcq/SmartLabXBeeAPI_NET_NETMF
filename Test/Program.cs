@@ -11,6 +11,7 @@ using SmartLab.XBee.Response;
 using System.IO.Ports;
 using System.Collections;
 using SmartLab.XBee.Status;
+using SmartLab.XBee.Device;
 
 namespace Test
 {
@@ -18,7 +19,7 @@ namespace Test
     {
         static XBeeAPI xbee;
 
-        static ExplicitDeviceAddress remote = new ExplicitDeviceAddress();
+        static ExplicitAddress remote = new ExplicitAddress();
         static string[] ports = SerialPort.GetPortNames();
 
         static void Main(string[] args)
@@ -123,6 +124,9 @@ namespace Test
                             SE(lines);
                         else Console.WriteLine(">> wrong format!\r\n");
                         break;
+
+                    default: Console.WriteLine(">> unknown command!\r\n");
+                        break;
                 }
 
                 Console.Write("<< ");
@@ -185,6 +189,17 @@ namespace Test
                 if (code == CommandStatus.OK && p != null)
                     Console.WriteLine(">> " + re.GetRequestCommand() + " = " + UTF8Encoding.UTF8.GetString(p) + " [" + GetString(p) + "]\r\n");
                 else Console.Write("\r\n");
+
+                ZigBeeDiscoverAddress dd = ZigBeeDiscoverAddress.Parse(re);
+
+                if (dd != null)
+                {
+                    Console.WriteLine(">> Node Discovery : ");
+                    Console.WriteLine(">> SH " + dd.GetSerialNumberHigh().ToString("X2"));
+                    Console.WriteLine(">> SL " + dd.GetSerialNumberLow().ToString("X2"));
+                    Console.WriteLine(">> NET " + dd.GetNetworkAddress().ToString("X2"));
+                    Console.WriteLine(">> NI " + dd.GetNIString() + "\r\n");
+                }
             }
         }
 
@@ -210,13 +225,24 @@ namespace Test
             else
             {
                 byte[] p = re.GetParameter();
-                DeviceAddress add = re.GetRemoteDevice();
+                Address add = re.GetRemoteDevice();
                 CommandStatus code = re.GetCommandStatus();
                 Console.WriteLine(">> " + code + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2"));
 
                 if (code == CommandStatus.OK && p != null)
                     Console.WriteLine(">> " + re.GetRequestCommand() + " = " + UTF8Encoding.UTF8.GetString(p) + " [" + GetString(p) + "]\r\n");
                 else Console.Write("\r\n");
+            }
+
+            ZigBeeDiscoverAddress dd = ZigBeeDiscoverAddress.Parse(re);
+
+            if (dd != null)
+            {
+                Console.WriteLine(">> Node Discovery : ");
+                Console.WriteLine(">> SH " + dd.GetSerialNumberHigh().ToString("X2"));
+                Console.WriteLine(">> SL " + dd.GetSerialNumberLow().ToString("X2"));
+                Console.WriteLine(">> NET " + dd.GetNetworkAddress().ToString("X2"));
+                Console.WriteLine(">> NI " + dd.GetNIString() + "\r\n");
             }
         }
 
@@ -271,7 +297,7 @@ namespace Test
 
         static void xbee_onZigBeeReceivePacketResponse(SmartLab.XBee.Response.ZigBeeRxResponse e)
         {
-            DeviceAddress add = e.GetRemoteDevice();
+            Address add = e.GetRemoteDevice();
             byte[] data = e.GetReceivedData();
             Console.WriteLine("\r\n>> ZigBee Rx : " + e.GetReceiveStatus() + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2"));
             Console.WriteLine(">> " + UTF8Encoding.UTF8.GetString(data) + " [" + GetString(data) + "]\r\n");
@@ -284,7 +310,7 @@ namespace Test
 
         static void xbee_onNodeIdentificationResponse(SmartLab.XBee.Response.NodeIdentificationResponse e)
         {
-            DeviceAddress add = e.GetRemoteDevice();
+            Address add = e.GetRemoteDevice();
             Console.WriteLine("\r\n>> node join :" + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2"));
             Console.WriteLine(">> NI : " + e.GetNIString());
             Console.WriteLine(">> Parent : " + e.GetParentNetworkAddress().ToString("X2"));
@@ -309,7 +335,7 @@ namespace Test
 
         static void xbee_onXBeeRx64Indicator(XBeeRx64Response e)
         {
-            DeviceAddress add = e.GetRemoteDevice();
+            Address add = e.GetRemoteDevice();
             byte[] data = e.GetReceivedData();
             Console.WriteLine("\r\n>> XBee Rx 64 : " + e.GetReceiveStatus() + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2") + " RSSI = " + e.GetRSSI());
             Console.WriteLine(">> " + UTF8Encoding.UTF8.GetString(data) + " [" + GetString(data) + "]\r\n");
@@ -331,45 +357,45 @@ namespace Test
         static void xbee_onXBeeIODataSampleRx16Response(XBeeIODataSampleRx16Response e)
         {
             IOSamples samples = e.GetIOSamples();
-            DeviceAddress add = e.GetRemoteDevice();
+            Address add = e.GetRemoteDevice();
             Console.WriteLine("\r\n>> XBee Rx16 IO sample : " + e.GetReceiveStatus() + " From " + add.GetNetworkAddress().ToString("X2") + " RSSI = " + e.GetRSSI());
             Console.WriteLine(">> Digitals : ");
             foreach (DictionaryEntry entry in samples.GetDigitals())
-                Console.WriteLine(">> Pin " + ((Device.Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
             Console.WriteLine(">> Analogs : ");
             foreach (DictionaryEntry entry in samples.GetAnalogs())
-                Console.WriteLine(">> Pin " + ((Device.Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
         }
 
         static void xbee_onXBeeIODataSampleRx64Response(XBeeIODataSampleRx64Response e)
         {
             IOSamples samples = e.GetIOSamples();
-            DeviceAddress add = e.GetRemoteDevice();
+            Address add = e.GetRemoteDevice();
             Console.WriteLine("\r\n>> XBee Rx64 IO sample : " + e.GetReceiveStatus() + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2") + " RSSI = " + e.GetRSSI());
             Console.WriteLine(">> Digitals : ");
             foreach (DictionaryEntry entry in samples.GetDigitals())
-                Console.WriteLine(">> Pin " + ((Device.Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
             Console.WriteLine(">> Analogs : ");
             foreach (DictionaryEntry entry in samples.GetAnalogs())
-                Console.WriteLine(">> Pin " + ((Device.Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
         }
 
         static void xbee_onZigBeeIODataSampleRXResponse(ZigBeeIODataSampleRxResponse e)
         {
             IOSamples samples = e.GetIOSamples();
-            DeviceAddress add = e.GetRemoteDevice();
+            Address add = e.GetRemoteDevice();
             Console.WriteLine("\r\n>> ZigBee IO sample : " + e.GetReceiveStatus() + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2"));
             Console.WriteLine(">> Digitals : ");
             foreach (DictionaryEntry entry in samples.GetDigitals())
-                Console.WriteLine(">> Pin " + ((Device.Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
             Console.WriteLine(">> Analogs : ");
             foreach (DictionaryEntry entry in samples.GetAnalogs())
-                Console.WriteLine(">> Pin " + ((Device.Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
         }
 
         static void xbee_onZigBeeExplicitRxResponse(ZigBeeExplicitRxResponse e)
         {
-            ExplicitDeviceAddress add = e.GetExplicitRemoteDevice();
+            ExplicitAddress add = e.GetExplicitRemoteDevice();
             byte[] data = e.GetReceivedData();
             Console.WriteLine("\r\n>> Explicit ZigBee Rx : " + e.GetReceiveStatus() + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2"));
             Console.WriteLine(">> Source Endpoint : " + add.GetSourceEndpoint().ToString("X2"));

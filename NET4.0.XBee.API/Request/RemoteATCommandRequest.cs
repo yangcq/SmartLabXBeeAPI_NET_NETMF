@@ -1,6 +1,7 @@
 using System;
 using SmartLab.XBee.Options;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Request
 {
@@ -13,7 +14,7 @@ namespace SmartLab.XBee.Request
         //AT_Command
         //Parameter_Value
 
-        public RemoteATCommandRequest(byte frameID, DeviceAddress remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter = null)
+        public RemoteATCommandRequest(byte frameID, Address remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter = null)
             : this(frameID, remoteAddress, command, transmitOptions, parameter, 0, parameter == null ? 0 : parameter.Length)
         { }
 
@@ -25,7 +26,7 @@ namespace SmartLab.XBee.Request
         /// <param name="options">RemoteCommandOptions</param>
         /// <param name="AT_Command"></param>
         /// <param name="Parameter_Value">this can be null</param>
-        public RemoteATCommandRequest(byte frameID, DeviceAddress remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter, int parameterOffset, int parameterLength)
+        public RemoteATCommandRequest(byte frameID, Address remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter, int parameterOffset, int parameterLength)
             : base(13 + (parameter == null ? 0 : parameter.Length), API_IDENTIFIER.Remote_Command_Request, frameID)
         {
             this.SetContent(remoteAddress.GetAddressValue());
@@ -55,6 +56,6 @@ namespace SmartLab.XBee.Request
             this.SetPosition(15 + length - offset);
         }
 
-        public void SetRemoteAddress(DeviceAddress remoteAddress) { this.SetContent(2, remoteAddress.GetAddressValue()); }
+        public void SetRemoteAddress(Address remoteAddress) { this.SetContent(2, remoteAddress.GetAddressValue()); }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using SmartLab.XBee.Options;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Request
 {
@@ -17,11 +18,11 @@ namespace SmartLab.XBee.Request
         //TransmitOptions;
         //RF_Data;
 
-        public ZigBeeExplicitTxRequest(byte frameID, ExplicitDeviceAddress remoteAddress, OptionsBase transmitOptions, byte[] payload)
+        public ZigBeeExplicitTxRequest(byte frameID, ExplicitAddress remoteAddress, OptionsBase transmitOptions, byte[] payload)
             : this(frameID, remoteAddress, transmitOptions, payload, 0, payload.Length)
         { }
 
-        public ZigBeeExplicitTxRequest(byte frameID, ExplicitDeviceAddress remoteAddress, OptionsBase transmitOptions, byte[] payload, int offset, int length)
+        public ZigBeeExplicitTxRequest(byte frameID, ExplicitAddress remoteAddress, OptionsBase transmitOptions, byte[] payload, int offset, int length)
             : base(18 + payload.Length, API_IDENTIFIER.Explicit_Addressing_ZigBee_Command_Frame, frameID)
         {
             this.SetContent(remoteAddress.GetAddressValue());
@@ -43,9 +44,9 @@ namespace SmartLab.XBee.Request
             this.SetPosition(20 + length - offset);
         }
 
-        public override void SetRemoteAddress(DeviceAddress remoteAddress) { this.SetContent(2, remoteAddress.GetAddressValue()); }
+        public override void SetRemoteAddress(Address remoteAddress) { this.SetContent(2, remoteAddress.GetAddressValue()); }
 
-        public void SetRemoteExplicitAddress(ExplicitDeviceAddress remoteAddress) 
+        public void SetRemoteExplicitAddress(ExplicitAddress remoteAddress) 
         {
             this.SetContent(2, remoteAddress.GetAddressValue());
             this.SetContent(12, remoteAddress.GetExplicitValue());         }
