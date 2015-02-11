@@ -50,8 +50,8 @@ namespace SmartLab.XBee
 
         public void SetPosition(int position) 
         {
-            if (position > this.FrameData.Length)
-                position = this.FrameData.Length;
+            if (position >= this.FrameData.Length)
+                this.position = this.FrameData.Length;
             else this.position = position; 
         }
 
