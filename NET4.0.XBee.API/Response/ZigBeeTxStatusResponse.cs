@@ -14,9 +14,9 @@ namespace SmartLab.XBee.Response
             return (DeliveryStatus)this.GetFrameData()[5];
         }
 
-        public byte[] GetDestinationAddress16()
+        public int GetDestinationAddress16()
         {
-            return new byte[2] { this.GetFrameData()[2], this.GetFrameData()[3] };
+            return this.GetFrameData()[2] << 8 | this.GetFrameData()[3];
         }
 
         public byte GetTransmitRetryCount()

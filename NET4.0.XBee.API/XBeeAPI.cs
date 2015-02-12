@@ -55,11 +55,10 @@ namespace SmartLab.XBee
         private const int INITIAL_FRAME_LENGTH = 100;
 
         private SerialPort serialPort;
-        private APIFrame response;
         private APIMode mode;
 
-        private APIFrame safeResponse;
         private APIFrame request;
+        private APIFrame response;
         private bool isSignal = false;
         private byte waitFrameID;
         private API_IDENTIFIER waitFrameType;
@@ -83,7 +82,7 @@ namespace SmartLab.XBee
             this.waitEvent = new AutoResetEvent(false);
             this.mode = mode;
             this.response = new APIFrame(INITIAL_FRAME_LENGTH);
-            this.safeResponse = new APIFrame(INITIAL_FRAME_LENGTH);
+            this.request = new APIFrame(INITIAL_FRAME_LENGTH);
             this.request = new APIFrame(INITIAL_FRAME_LENGTH);
             this.serialPort.Open();
         }
@@ -185,7 +184,7 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new XBeeTxStatusResponse(safeResponse);
+            return new XBeeTxStatusResponse(request);
         }
 
         public XBeeTxStatusResponse SendXBeeTx64(Address remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx64(remoteAddress, option, payload, 0, payload.Length); }
@@ -217,7 +216,7 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new XBeeTxStatusResponse(safeResponse);
+            return new XBeeTxStatusResponse(request);
         }
 
         public ATCommandResponse SendATCommand(ATCommand command, bool applyChange, byte[] parameter = null)
@@ -257,7 +256,7 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new ATCommandResponse(safeResponse);
+            return new ATCommandResponse(request);
         }
 
         public RemoteCommandResponse SendRemoteATCommand(Address remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter = null)
@@ -299,7 +298,7 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new RemoteCommandResponse(safeResponse);
+            return new RemoteCommandResponse(request);
         }
 
         public ZigBeeTxStatusResponse SendZigBeeTx(Address remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeTx(remoteAddress, option, payload, 0, payload.Length); }
@@ -332,7 +331,7 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new ZigBeeTxStatusResponse(safeResponse);
+            return new ZigBeeTxStatusResponse(request);
         }
 
         public ZigBeeTxStatusResponse SendZigBeeExplicitTx(ExplicitAddress remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeExplicitTx(remoteAddress, option, payload, 0, payload.Length); }
@@ -366,7 +365,7 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new ZigBeeTxStatusResponse(safeResponse);
+            return new ZigBeeTxStatusResponse(request);
         }
 
         public ATCommandResponse SetPinFunction(Pin pin, Pin.Functions function) { return SendATCommand(new ATCommand(pin.COMMAND), true, new byte[] { (byte)function }); }
@@ -396,8 +395,8 @@ namespace SmartLab.XBee
             if (isSignal && response.GetFrameData()[1] == request.GetFrameData()[1] && response.GetFrameType() == waitFrameType)
             {
                 isSignal = false;
-                safeResponse.Rewind();
-                safeResponse.SetContent(response.GetFrameData(), 0, response.GetPosition());
+                request.Rewind();
+                request.SetContent(response.GetFrameData(), 0, response.GetPosition());
                 waitEvent.Set();
                 return;
             }
