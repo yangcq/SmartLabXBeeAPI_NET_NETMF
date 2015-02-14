@@ -1,5 +1,6 @@
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
+using System;
 
 namespace SmartLab.XBee.Response
 {
@@ -25,9 +26,20 @@ namespace SmartLab.XBee.Response
         /// <returns></returns>
         public override byte[] GetParameter()
         {
-            if (this.GetPosition() > 5)
-                return this.GetFrameData().ExtractRangeFromArray(5, this.GetPosition() - 5);
-            else return null;
+            int length = this.GetParameterLength();
+
+            if (length <= 0)
+                return null;
+
+            byte[] cache = new byte[length];
+            Array.Copy(this.GetFrameData(), 5, cache, 0, length);
+            return cache;
         }
+
+        public override byte GetParameter(int index) { return this.GetFrameData()[5 + index];}
+
+        public override int GetParameterLength() { return this.GetPosition() - 5; }
+
+        public override int GetParameterOffset() { return 5; }
     }
 }

@@ -49,35 +49,29 @@
     <Compile Include="Request\RemoteATCommandRequest.cs" />
     <Compile Include="Request\RemoteIODetectionConfigRequest.cs" />
     <Compile Include="Request\RemotePinConfigurationRequest.cs" />
-    <Compile Include="Request\RequestBase.cs" />
-    <Compile Include="Request\TxInterfacecs.cs" />
-    <Compile Include="Request\TxRequestBase.cs" />
+    <Compile Include="Request\TxBase.cs" />
+    <Compile Include="Request\TxPayloadBase.cs" />
     <Compile Include="Request\XBeeTx16Request.cs" />
     <Compile Include="Request\XBeeTx64Request.cs" />
     <Compile Include="Request\ZigBeeExplicitTxRequest.cs" />
     <Compile Include="Request\ZigBeeTxRequest.cs" />
     <Compile Include="Response\ATCommandResponse.cs" />
     <Compile Include="Response\CommandResponseBase.cs" />
-    <Compile Include="Response\CommandResponseInterface.cs" />
     <Compile Include="Response\ModemStatusResponse.cs" />
     <Compile Include="Response\NodeIdentificationResponse.cs" />
     <Compile Include="Response\RemoteCommandResponse.cs" />
-    <Compile Include="Response\ResponseBase.cs" />
-    <Compile Include="Response\RSSIInterface.cs" />
-    <Compile Include="Response\RxResponseBase.cs" />
+    <Compile Include="Response\RxBase.cs" />
+    <Compile Include="Response\RxPayloadBase.cs" />
     <Compile Include="Response\SensorReadResponse.cs" />
     <Compile Include="Response\TxStatusBase.cs" />
-    <Compile Include="Response\TxStatusInterface.cs" />
-    <Compile Include="Response\XBeeIODataSampleRx16Response.cs" />
-    <Compile Include="Response\XBeeIODataSampleRx64Response.cs" />
-    <Compile Include="Response\XBeeIODataSampleRxBase.cs" />
+    <Compile Include="Response\XBeeRx16IOSampleResponse.cs" />
+    <Compile Include="Response\XBeeRx64IOSampleResponse.cs" />
+    <Compile Include="Response\RxIOSampleBase.cs" />
     <Compile Include="Response\XBeeRx16Response.cs" />
     <Compile Include="Response\XBeeRx64Response.cs" />
-    <Compile Include="Response\XBeeRxBase.cs" />
     <Compile Include="Response\XBeeTxStatusResponse.cs" />
     <Compile Include="Response\ZigBeeExplicitRxResponse.cs" />
-    <Compile Include="Response\ZigBeeIODataSampleRxResponse.cs" />
-    <Compile Include="Response\ZigBeeRxBase.cs" />
+    <Compile Include="Response\ZigBeeIOSampleResponse.cs" />
     <Compile Include="Response\ZigBeeRxResponse.cs" />
     <Compile Include="Response\ZigBeeTxStatusResponse.cs" />
     <Compile Include="Status\CommandStatus.cs" />
@@ -98,12 +92,6 @@
     <Compile Include="Type\OneWireSensor.cs" />
     <Compile Include="Type\SourceEvent.cs" />
     <Compile Include="XBeeAPI.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NET4.0.Utility\NET4.0.Utility.csproj">
-      <Project>{2093A9C2-0EA4-4554-A07F-C6EA4188F940}</Project>
-      <Name>NET4.0.Utility</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

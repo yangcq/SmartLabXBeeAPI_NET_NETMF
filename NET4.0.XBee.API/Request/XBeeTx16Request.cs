@@ -5,7 +5,7 @@ using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Request
 {
-    public class XBeeTx16Request : TxRequestBase
+    public class XBeeTx16Request : TxPayloadBase
     {
         /// <summary>
         /// the ieee 64 bit address is ignored

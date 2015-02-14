@@ -47,20 +47,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NET4.0.Utility\NET4.0.Utility.csproj">
-      <Project>{2093A9C2-0EA4-4554-A07F-C6EA4188F940}</Project>
-      <Name>NET4.0.Utility</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NET4.0.XBee.API\NET4.0.XBee.API.csproj">
-      <Project>{AEF33AFB-75A9-41F3-9D96-D567CB5FDFFB}</Project>
-      <Name>NET4.0.XBee.API</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="XBee API Test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NET4.0.XBee.API\NET4.0.XBee.API.csproj">
+      <Project>{AEF33AFB-75A9-41F3-9D96-D567CB5FDFFB}</Project>
+      <Name>NET4.0.XBee.API</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

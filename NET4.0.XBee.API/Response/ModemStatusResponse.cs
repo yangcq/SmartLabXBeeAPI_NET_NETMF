@@ -3,7 +3,7 @@ using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Response
 {
-    public class ModemStatusResponse : ResponseBase
+    public class ModemStatusResponse : RxBase
     {
         public ModemStatusResponse(APIFrame frame)
             : base(frame)

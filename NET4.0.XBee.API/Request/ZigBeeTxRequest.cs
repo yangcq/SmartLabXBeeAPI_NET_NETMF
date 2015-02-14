@@ -4,7 +4,7 @@ using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Request
 {
-    public class ZigBeeTxRequest : TxRequestBase
+    public class ZigBeeTxRequest : TxPayloadBase
     {
         //0x10
         //FrameID;

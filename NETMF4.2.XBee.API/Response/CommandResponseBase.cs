@@ -3,7 +3,7 @@ using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Response
 {
-    public abstract class CommandResponseBase : ResponseBase, ICommandResponse
+    public abstract class CommandResponseBase : RxBase
     {
         public CommandResponseBase(APIFrame frame)
             : base(frame)
@@ -16,5 +16,11 @@ namespace SmartLab.XBee.Response
         public abstract CommandStatus GetCommandStatus();
 
         public abstract byte[] GetParameter();
+
+        public abstract byte GetParameter(int index);
+
+        public abstract int GetParameterLength();
+
+        public abstract int GetParameterOffset();
     }
 }

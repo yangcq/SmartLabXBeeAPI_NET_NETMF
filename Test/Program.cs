@@ -189,8 +189,10 @@ namespace Test
                 if (code == CommandStatus.OK && p != null)
                     Console.WriteLine(">> " + re.GetRequestCommand() + " = " + UTF8Encoding.UTF8.GetString(p) + " [" + GetString(p) + "]\r\n");
                 else Console.Write("\r\n");
-
-                ZigBeeDiscoverAddress dd = ZigBeeDiscoverAddress.Parse(re);
+                
+                /*
+                //ZigBeeDiscoverAddress dd = ZigBeeDiscoverAddress.Parse(re);
+                XBeeDiscoverAddress dd = XBeeDiscoverAddress.Parse(re);
 
                 if (dd != null)
                 {
@@ -199,7 +201,7 @@ namespace Test
                     Console.WriteLine(">> SL " + dd.GetSerialNumberLow().ToString("X2"));
                     Console.WriteLine(">> NET " + dd.GetNetworkAddress().ToString("X2"));
                     Console.WriteLine(">> NI " + dd.GetNIString() + "\r\n");
-                }
+                }*/
             }
         }
 
@@ -234,6 +236,7 @@ namespace Test
                 else Console.Write("\r\n");
             }
 
+            /*
             ZigBeeDiscoverAddress dd = ZigBeeDiscoverAddress.Parse(re);
 
             if (dd != null)
@@ -243,7 +246,7 @@ namespace Test
                 Console.WriteLine(">> SL " + dd.GetSerialNumberLow().ToString("X2"));
                 Console.WriteLine(">> NET " + dd.GetNetworkAddress().ToString("X2"));
                 Console.WriteLine(">> NI " + dd.GetNIString() + "\r\n");
-            }
+            }*/
         }
 
         static void S(string[] lines)
@@ -354,20 +357,20 @@ namespace Test
             Console.WriteLine("\r\n>> remote AT command " + e.GetCommandStatus() + " " + e.GetRequestCommand() + " = " + (p == null ? " " : UTF8Encoding.UTF8.GetString(p)) + "\r\n");
         }
 
-        static void xbee_onXBeeIODataSampleRx16Response(XBeeIODataSampleRx16Response e)
+        static void xbee_onXBeeIODataSampleRx16Response(XBeeRx16IOSampleResponse e)
         {
             IOSamples samples = e.GetIOSamples();
             Address add = e.GetRemoteDevice();
             Console.WriteLine("\r\n>> XBee Rx16 IO sample : " + e.GetReceiveStatus() + " From " + add.GetNetworkAddress().ToString("X2") + " RSSI = " + e.GetRSSI());
             Console.WriteLine(">> Digitals : ");
             foreach (DictionaryEntry entry in samples.GetDigitals())
-                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + (Pin.Status)entry.Value);
             Console.WriteLine(">> Analogs : ");
             foreach (DictionaryEntry entry in samples.GetAnalogs())
-                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + (int)entry.Value);
         }
 
-        static void xbee_onXBeeIODataSampleRx64Response(XBeeIODataSampleRx64Response e)
+        static void xbee_onXBeeIODataSampleRx64Response(XBeeRx64IOSampleResponse e)
         {
             IOSamples samples = e.GetIOSamples();
             Address add = e.GetRemoteDevice();
@@ -380,7 +383,7 @@ namespace Test
                 Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
         }
 
-        static void xbee_onZigBeeIODataSampleRXResponse(ZigBeeIODataSampleRxResponse e)
+        static void xbee_onZigBeeIODataSampleRXResponse(ZigBeeIOSampleResponse e)
         {
             IOSamples samples = e.GetIOSamples();
             Address add = e.GetRemoteDevice();

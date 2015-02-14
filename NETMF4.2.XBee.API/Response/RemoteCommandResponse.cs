@@ -1,6 +1,7 @@
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
 using SmartLab.XBee.Device;
+using System;
 
 namespace SmartLab.XBee.Response
 {
@@ -20,16 +21,29 @@ namespace SmartLab.XBee.Response
             return (CommandStatus)this.GetFrameData()[14];
         }
 
-        public override byte[] GetParameter()
-        {
-            if (this.GetPosition() > 15)
-                return this.GetFrameData().ExtractRangeFromArray(15, this.GetPosition() - 15);
-            else return null;
-        }
-
         public Address GetRemoteDevice()
         {
-            return new Address(GetFrameData().ExtractRangeFromArray(2, 10));
+            byte[] cache = new byte[10];
+            Array.Copy(this.GetFrameData(), 2, cache, 0, 10);
+            return new Address(cache);
         }
+
+        public override byte[] GetParameter()
+        {
+            int length = this.GetParameterLength();
+
+            if (length <= 0)
+                return null;
+
+            byte[] cache = new byte[length];
+            Array.Copy(this.GetFrameData(), 15, cache, 0, length);
+            return cache;
+        }
+
+        public override byte GetParameter(int index) { return this.GetFrameData()[15 + index]; }
+
+        public override int GetParameterLength() { return this.GetPosition() - 15; }
+
+        public override int GetParameterOffset() { return 15; }
     }
 }

@@ -2,7 +2,7 @@ using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Request
 {
-    public abstract class CommandRequestBase : RequestBase
+    public abstract class CommandRequestBase : TxBase
     {
         public CommandRequestBase(int length, API_IDENTIFIER identifier, byte FrameID)
             : base(length, identifier, FrameID) 

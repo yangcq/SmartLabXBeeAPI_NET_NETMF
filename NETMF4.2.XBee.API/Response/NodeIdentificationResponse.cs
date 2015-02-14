@@ -2,10 +2,11 @@ using System.Text;
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
 using SmartLab.XBee.Device;
+using System;
 
 namespace SmartLab.XBee.Response
 {
-    public class NodeIdentificationResponse : ZigBeeRxBase
+    public class NodeIdentificationResponse : RxBase
     {
         private int offset = 0;
 
@@ -13,31 +14,37 @@ namespace SmartLab.XBee.Response
             : base(frame)
         { this.offset = this.GetPosition() - 8; }
 
-        public override int GetReceivedDataOffset() { return 22; }
-
-        public override byte[] GetReceivedData()
-        {
-            return GetFrameData().ExtractRangeFromArray(22, this.GetPosition() - 22);
-        }
-
-        public override ReceiveStatus GetReceiveStatus()
+        public ReceiveStatus GetReceiveStatus()
         {
             return (ReceiveStatus)this.GetFrameData()[11];
         }
 
-        public override Address GetRemoteDevice()
+        public Address GetRemoteDevice()
         {
-            return new Address(GetFrameData().ExtractRangeFromArray(14, 8), GetFrameData().ExtractRangeFromArray(12, 2));
+            byte[] cache = new byte[10];
+            Array.Copy(this.GetFrameData(), 14, cache, 0, 8);
+            cache[8] = this.GetFrameData()[12];
+            cache[9] = this.GetFrameData()[13];
+            return new Address(cache);
         }
 
         public Address GetSenderDevice()
         {
-            return new Address(GetFrameData().ExtractRangeFromArray(1, 10));
+            byte[] cache = new byte[10];
+            Array.Copy(this.GetFrameData(), 1, cache, 0, 10);
+            return new Address(cache);
         }
 
         public string GetNIString()
         {
-            return new string(UTF8Encoding.UTF8.GetChars(this.GetFrameData().ExtractRangeFromArray(22, this.GetPosition() - 31)));
+            int length = this.GetPosition() - 31;
+
+            if (length <= 0)
+                return string.Empty;
+
+            byte[] cache = new byte[length];
+            Array.Copy(this.GetFrameData(), 22, cache, 0, length);
+            return new string(UTF8Encoding.UTF8.GetChars(cache));
         }
 
         public int GetParentNetworkAddress()

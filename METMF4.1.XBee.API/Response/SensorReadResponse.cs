@@ -1,28 +1,24 @@
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
 using SmartLab.XBee.Device;
+using System;
 
 namespace SmartLab.XBee.Response
 {
-    public class SensorReadResponse : ZigBeeRxBase
+    public class SensorReadResponse : RxBase
     {
         public SensorReadResponse(APIFrame frame)
             : base(frame)
         { }
 
-        public override int GetReceivedDataOffset() { return 12; }
-
-        public override byte[] GetReceivedData()
+        public Address GetRemoteDevice()
         {
-            return GetFrameData().ExtractRangeFromArray(12, GetPosition() - 12);
+            byte[] cache = new byte[10];
+            Array.Copy(this.GetFrameData(), 1, cache, 0, 10);
+            return new Address(cache);
         }
 
-        public override Address GetRemoteDevice()
-        {
-            return new Address(GetFrameData().ExtractRangeFromArray(1, 10));
-        }
-
-        public override ReceiveStatus GetReceiveStatus()
+        public ReceiveStatus GetReceiveStatus()
         {
             return (ReceiveStatus)this.GetFrameData()[11];
         }

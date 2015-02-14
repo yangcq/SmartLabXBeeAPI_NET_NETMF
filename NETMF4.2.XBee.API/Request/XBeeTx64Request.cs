@@ -5,7 +5,7 @@ using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Request
 {
-    public class XBeeTx64Request : TxRequestBase
+    public class XBeeTx64Request : TxPayloadBase
     {
         //0x00
         //FrameID

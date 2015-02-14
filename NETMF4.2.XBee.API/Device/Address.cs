@@ -1,4 +1,5 @@
 using SmartLab.XBee.Response;
+using System;
 
 namespace SmartLab.XBee.Device
 {
@@ -27,7 +28,7 @@ namespace SmartLab.XBee.Device
         /// <param name="NET16"></param>
         public Address(byte[] Address64, byte[] NET16)
         {
-            this.value = Address64.CombineArray(NET16);
+            this.value = new byte[] { Address64[0], Address64[1], Address64[2], Address64[3], Address64[4], Address64[5], Address64[6], Address64[7], NET16[0], NET16[1] };
         }
 
         /// <summary>
@@ -100,29 +101,25 @@ namespace SmartLab.XBee.Device
         /// </summary>
         /// <param name="response">muset be non null parameter</param>
         /// <returns></returns>
-        public static Address Parse(ICommandResponse response)
+        public static Address Parse(CommandResponseBase response)
         {
-            byte[] message = response.GetParameter();
-            if (message != null)
-                if (response.GetRequestCommand().ToString().ToUpper() == "ND")
-                {
-                    Address device = new Address();
+            if (response == null)
+                return null;
 
-                    device.value[0] = message[2];
-                    device.value[1] = message[3];
-                    device.value[2] = message[4];
-                    device.value[3] = message[5];
-                    device.value[4] = message[6];
-                    device.value[5] = message[7];
-                    device.value[6] = message[8];
-                    device.value[7] = message[9];
+            if (response.GetRequestCommand().ToString().ToUpper() != "ND")
+                return null;
 
-                    device.value[8] = message[0];
-                    device.value[9] = message[1];
+            int length = response.GetParameterLength();
+            if (length <= 0)
+                return null;
 
-                    return device;
-                }
-            return null;
+            Address device = new Address();
+
+            Array.Copy(response.GetFrameData(), response.GetParameterOffset() + 2, device.value, 0, 8);
+            device.value[8] = response.GetParameter(0);
+            device.value[9] = response.GetParameter(1);
+
+            return device;
         }
 
         public override bool Equals(object obj)

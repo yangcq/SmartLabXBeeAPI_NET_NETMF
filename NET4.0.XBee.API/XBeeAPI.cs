@@ -16,14 +16,14 @@ namespace SmartLab.XBee
     public delegate void ModemStatusResponseHandler(ModemStatusResponse e);
     public delegate void NodeIdentificationResponseHandler(NodeIdentificationResponse e);
     public delegate void RemoteCommandResponseHandler(RemoteCommandResponse e);
-    public delegate void XBeeIODataSampleRx16ResponseHandler(XBeeIODataSampleRx16Response e);
-    public delegate void XBeeIODataSampleRx64ResponseHandler(XBeeIODataSampleRx64Response e);
+    public delegate void XBeeIODataSampleRx16ResponseHandler(XBeeRx16IOSampleResponse e);
+    public delegate void XBeeIODataSampleRx64ResponseHandler(XBeeRx64IOSampleResponse e);
     public delegate void XBeeRx16IndicatorHandler(XBeeRx16Response e);
     public delegate void XBeeRx64IndicatorHandler(XBeeRx64Response e);
     public delegate void XBeeSensorReadResponseHandler(SensorReadResponse e);
     public delegate void XBeeTransmitStatusResponseHandler(XBeeTxStatusResponse e);
     public delegate void ZigBeeExplicitRxResponseHandler(ZigBeeExplicitRxResponse e);
-    public delegate void ZigBeeIODataSampleRXResponseHandler(ZigBeeIODataSampleRxResponse e);
+    public delegate void ZigBeeIODataSampleRXResponseHandler(ZigBeeIOSampleResponse e);
     public delegate void ZigBeeReceivePacketResponseHandler(ZigBeeRxResponse e);
     public delegate void ZigBeeTransmitStatusResponseHandler(ZigBeeTxStatusResponse e);
     #endregion
@@ -413,11 +413,11 @@ namespace SmartLab.XBee
                     break;
                 case API_IDENTIFIER.Rx64_IO_Data_Sample_Rx_Indicator:
                     if (onXBeeIODataSampleRx64Response != null)
-                        onXBeeIODataSampleRx64Response(new XBeeIODataSampleRx64Response(response));
+                        onXBeeIODataSampleRx64Response(new XBeeRx64IOSampleResponse(response));
                     break;
                 case API_IDENTIFIER.Rx16_IO_Data_Sample_Rx_Indicator:
                     if (onXBeeIODataSampleRx16Response != null)
-                        onXBeeIODataSampleRx16Response(new XBeeIODataSampleRx16Response(response));
+                        onXBeeIODataSampleRx16Response(new XBeeRx16IOSampleResponse(response));
                     break;
                 case API_IDENTIFIER.XBee_Transmit_Status:
                     if (onXBeeTransmitStatusResponse != null)
@@ -445,7 +445,7 @@ namespace SmartLab.XBee
                     break;
                 case API_IDENTIFIER.ZigBee_IO_Data_Sample_Rx_Indicator:
                     if (onZigBeeIODataSampleRXResponse != null)
-                        onZigBeeIODataSampleRXResponse(new ZigBeeIODataSampleRxResponse(response));
+                        onZigBeeIODataSampleRXResponse(new ZigBeeIOSampleResponse(response));
                     break;
                 case API_IDENTIFIER.XBee_Sensor_Read_Indicato:
                     if (onXBeeSensorReadResponse != null)
