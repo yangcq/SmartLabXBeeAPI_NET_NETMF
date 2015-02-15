@@ -67,7 +67,7 @@ namespace SmartLab.XBee
             this.Rewind();
         }
 
-        public void Rewind() { this.position = 0; }
+        public void Rewind() { this.position = 0; this.isVerify = false; }
 
         /// <summary>
         /// write the value into the current posiont and the posiont + 1
@@ -169,6 +169,9 @@ namespace SmartLab.XBee
 
         public void CalculateChecksum()
         {
+            if (this.isVerify)
+                return;
+
             byte CS = 0x00;
             for (int i = 0; i < this.position; i++)
                 CS += this.FrameData[i];
