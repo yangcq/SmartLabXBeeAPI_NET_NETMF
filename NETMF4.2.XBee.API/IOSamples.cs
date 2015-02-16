@@ -36,8 +36,8 @@ namespace SmartLab.XBee
 
         public Device.Pin.Status GetDigital(Pin pin)
         {
-            if (this.analog.Contains(pin))
-                return (Device.Pin.Status)analog[pin];
+            if (this.digital.Contains(pin))
+                return (Device.Pin.Status)digital[pin];
             return Device.Pin.Status.UNMONITORED;
         }
 

@@ -1,7 +1,6 @@
-using System.Collections;
-using SmartLab.XBee.Type;
-using SmartLab.XBee.Status;
 using SmartLab.XBee.Device;
+using SmartLab.XBee.Status;
+using System.Collections;
 
 namespace SmartLab.XBee.Response
 {
@@ -16,8 +15,8 @@ namespace SmartLab.XBee.Response
             if (IOSamplePayload.Length - offset <= 3)
                 return null;
 
-            Hashtable Digital = new Hashtable();
             Hashtable Analog = new Hashtable();
+            Hashtable Digital = new Hashtable();
             int index = 0;
 
             if ((IOSamplePayload[offset + 1] & 0x01) + IOSamplePayload[offset + 2] == 0)//digital mask
@@ -80,8 +79,8 @@ namespace SmartLab.XBee.Response
             if (IOSamplePayload.Length - offset <= 3)
                 return null;
 
-            Hashtable Digital = new Hashtable();
             Hashtable Analog = new Hashtable();
+            Hashtable Digital = new Hashtable();
             int SUPPLY_VOLTAGE = 0;
             int index = 0;
 
