@@ -83,7 +83,6 @@ namespace SmartLab.XBee
             this.mode = mode;
             this.response = new APIFrame(INITIAL_FRAME_LENGTH);
             this.request = new APIFrame(INITIAL_FRAME_LENGTH);
-            this.request = new APIFrame(INITIAL_FRAME_LENGTH);
             this.serialPort.Open();
         }
 
