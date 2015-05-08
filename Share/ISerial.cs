@@ -10,6 +10,10 @@ namespace SmartLab.XBee
 
         void WriteByte(byte data);
 
+        /// <summary>
+        /// check if the serial port is already open
+        /// </summary>
+        /// <returns></returns>
         bool IsOpen();
 
         void Open();

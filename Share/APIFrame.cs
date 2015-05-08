@@ -14,6 +14,7 @@ namespace SmartLab.XBee
         private int position = 0;
 
         /// <summary>
+        /// Frame specifi data.
         /// payload content not include the checksum, the valid length is indicated by this.Length
         /// !! do not use FrameData.Length, this is not the packet's payload length
         /// </summary>
@@ -40,7 +41,7 @@ namespace SmartLab.XBee
         public API_IDENTIFIER GetFrameType() { return (API_IDENTIFIER)FrameData[0]; }
 
         /// <summary>
-        /// this does not affect the position
+        /// this does not affect the position, will always use position 0
         /// </summary>
         /// <param name="identifier"></param>
         public void SetFrameType(API_IDENTIFIER identifier) { this.SetContent(0, (byte)identifier); }
@@ -95,6 +96,8 @@ namespace SmartLab.XBee
                 ExpandSpace(1);
 
             this.FrameData[index] = value;
+
+            isVerify = false;
         }
 
         /// <summary>
@@ -139,13 +142,14 @@ namespace SmartLab.XBee
                 ExpandSpace(index + length - offset - this.FrameData.Length);
 
             Array.Copy(value, 0, this.FrameData, index, length);
+
+            isVerify = false;
         }
 
         public byte[] GetFrameData()
         {
             return this.FrameData;
         }
-
 
         public byte GetCheckSum() { return CheckSum; }
 

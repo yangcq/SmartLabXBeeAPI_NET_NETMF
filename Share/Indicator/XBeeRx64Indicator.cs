@@ -3,11 +3,11 @@ using SmartLab.XBee.Type;
 using SmartLab.XBee.Device;
 using System;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
-    public class XBeeRx64Response : RxPayloadBase
+    public class XBeeRx64Indicator : RxPayloadBase
     {
-        public XBeeRx64Response(APIFrame frame)
+        public XBeeRx64Indicator(APIFrame frame)
             : base(frame)
         { }
 

@@ -38,7 +38,8 @@ namespace SmartLab.XBee
 
         public void Close()
         {
-            serialPort.Close();
+            if (serialPort.IsOpen)
+                serialPort.Close();
         }
     }
 }

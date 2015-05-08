@@ -1,13 +1,12 @@
-using SmartLab.XBee.Status;
-using SmartLab.XBee.Type;
-using SmartLab.XBee.Device;
 using System;
+using SmartLab.XBee.Device;
+using SmartLab.XBee.Status;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
-    public class ZigBeeRxResponse : RxPayloadBase
+    public class ZigBeeRxIndicator : RxPayloadBase
     {
-        public ZigBeeRxResponse(APIFrame frame)
+        public ZigBeeRxIndicator(APIFrame frame)
             : base(frame)
         { }
 

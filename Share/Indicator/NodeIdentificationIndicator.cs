@@ -4,13 +4,13 @@ using SmartLab.XBee.Type;
 using SmartLab.XBee.Device;
 using System;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
-    public class NodeIdentificationResponse : RxBase
+    public class NodeIdentificationIndicator : RxBase
     {
         private int offset = 0;
 
-        public NodeIdentificationResponse(APIFrame frame)
+        public NodeIdentificationIndicator(APIFrame frame)
             : base(frame)
         { this.offset = this.GetPosition() - 8; }
 

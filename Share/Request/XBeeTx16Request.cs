@@ -42,11 +42,14 @@ namespace SmartLab.XBee.Request
 
         public override void SetPayload(byte[] data, int offset, int length)
         {
-            this.SetContent(5, data, offset, length);
-            this.SetPosition(5 + length - offset);
+            this.SetPosition(5);
+            this.SetContent(data, offset, length);
         }
 
-        public override void SetTransmitOptions(OptionsBase transmitOptions) { this.SetContent(4, transmitOptions.GetValue()); }
+        public override void SetTransmitOptions(OptionsBase transmitOptions)
+        {
+            this.SetContent(4, transmitOptions.GetValue());
+        }
         
         /// <summary>
         /// the ieee 64 bit address is ignored

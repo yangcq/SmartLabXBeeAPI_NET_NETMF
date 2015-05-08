@@ -1,11 +1,11 @@
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
-    public class ZigBeeTxStatusResponse : TxStatusBase
+    public class ZigBeeTxStatusIndicator : TxStatusBase
     {
-        public ZigBeeTxStatusResponse(APIFrame frame)
+        public ZigBeeTxStatusIndicator(APIFrame frame)
             : base(frame)
         { }
 

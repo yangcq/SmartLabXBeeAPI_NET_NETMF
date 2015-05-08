@@ -43,16 +43,22 @@ namespace SmartLab.XBee.Request
 
         public override void SetPayload(byte[] data, int offset, int length)
         {
-            this.SetContent(11, data, offset, length);
-            this.SetPosition(11 + length - offset);
+            this.SetPosition(11);
+            this.SetContent(data, offset, length);
         }
 
-        public override void SetTransmitOptions(OptionsBase transmitOptions) { this.SetContent(10, transmitOptions.GetValue()); }
+        public override void SetTransmitOptions(OptionsBase transmitOptions)
+        {
+            this.SetContent(10, transmitOptions.GetValue());
+        }
 
         /// <summary>
         /// the ieee 16 bit address is ignored
         /// </summary>
         /// <param name="networkAddress"></param>
-        public override void SetRemoteAddress(Address remoteAddress) { this.SetContent(2, remoteAddress.GetAddressValue(), 2, 8); }
+        public override void SetRemoteAddress(Address remoteAddress)
+        {
+            this.SetContent(2, remoteAddress.GetAddressValue(), 2, 8);
+        }
     }
 }

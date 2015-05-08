@@ -1,6 +1,6 @@
 using SmartLab.XBee.Type;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
     public abstract class RxBase: APIFrame
     {

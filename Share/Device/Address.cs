@@ -1,4 +1,4 @@
-using SmartLab.XBee.Response;
+using SmartLab.XBee.Indicator;
 using System;
 
 namespace SmartLab.XBee.Device

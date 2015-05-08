@@ -32,23 +32,33 @@ namespace SmartLab.XBee.Request
             this.SetContent(payload, offset, length);
         }
 
-        public void SetBroadcastRadius(byte broadcastRadius) { this.SetContent(18, broadcastRadius); }
+        public void SetBroadcastRadius(byte broadcastRadius)
+        {
+            this.SetContent(18, broadcastRadius);
+        }
 
-        public override void SetTransmitOptions(OptionsBase transmitOptions) { this.SetContent(19, transmitOptions.GetValue()); }
+        public override void SetTransmitOptions(OptionsBase transmitOptions)
+        {
+            this.SetContent(19, transmitOptions.GetValue());
+        }
 
         public override void SetPayload(byte[] data) { SetPayload(data, 0, data.Length); }
 
         public override void SetPayload(byte[] data, int offset, int length)
         {
-            this.SetContent(20, data, offset, length);
-            this.SetPosition(20 + length - offset);
+            this.SetPosition(20);
+            this.SetContent(data, offset, length);
         }
 
-        public override void SetRemoteAddress(Address remoteAddress) { this.SetContent(2, remoteAddress.GetAddressValue()); }
+        public override void SetRemoteAddress(Address remoteAddress)
+        {
+            this.SetContent(2, remoteAddress.GetAddressValue());
+        }
 
         public void SetRemoteExplicitAddress(ExplicitAddress remoteAddress) 
         {
             this.SetContent(2, remoteAddress.GetAddressValue());
-            this.SetContent(12, remoteAddress.GetExplicitValue());         }
+            this.SetContent(12, remoteAddress.GetExplicitValue());
+        }
     }
 }

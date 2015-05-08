@@ -1,11 +1,11 @@
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
-    public class ModemStatusResponse : RxBase
+    public class ModemStatusIndicator : RxBase
     {
-        public ModemStatusResponse(APIFrame frame)
+        public ModemStatusIndicator(APIFrame frame)
             : base(frame)
         { }
 

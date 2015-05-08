@@ -2,11 +2,11 @@ using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
 using SmartLab.XBee.Device;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
-    public class XBeeRx64IOSampleResponse : RxIOSampleBase
+    public class XBeeRx64IOSampleIndicator : RxIOSampleBase
     {
-        public XBeeRx64IOSampleResponse(APIFrame frame)
+        public XBeeRx64IOSampleIndicator(APIFrame frame)
             : base(frame)
         { }
 

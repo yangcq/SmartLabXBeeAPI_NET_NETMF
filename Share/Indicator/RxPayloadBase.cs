@@ -2,7 +2,7 @@ using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
 using SmartLab.XBee.Device;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
     public abstract class RxPayloadBase : RxBase
     {

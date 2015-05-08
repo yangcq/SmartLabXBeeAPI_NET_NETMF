@@ -1,7 +1,7 @@
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
     public abstract class CommandResponseBase : RxBase
     {

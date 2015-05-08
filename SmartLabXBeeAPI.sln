@@ -9,91 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETMF4.2.XBee.API", "NETMF4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XBeeAPITest", "Test\XBeeAPITest.csproj", "{58BD1227-F1CA-47C2-98C8-F87E3D02311F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Share", "Share", "{874A30FC-D889-4A67-8AEA-9896172E0FAD}"
-	ProjectSection(SolutionItems) = preProject
-		Share\APIFrame.cs = Share\APIFrame.cs
-		Share\Core.cs = Share\Core.cs
-		Share\IOSamples.cs = Share\IOSamples.cs
-		Share\ISerial.cs = Share\ISerial.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Device", "Device", "{A82A4E80-C36C-4ABF-9F49-CDE7CA9133AD}"
-	ProjectSection(SolutionItems) = preProject
-		Share\Device\Address.cs = Share\Device\Address.cs
-		Share\Device\ExplicitAddress.cs = Share\Device\ExplicitAddress.cs
-		Share\Device\Pin.cs = Share\Device\Pin.cs
-		Share\Device\XBeeDiscoverAddress.cs = Share\Device\XBeeDiscoverAddress.cs
-		Share\Device\ZigBeeDiscoverAddress.cs = Share\Device\ZigBeeDiscoverAddress.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Options", "Options", "{9F3BE649-42A1-40D8-ABC2-E03233392327}"
-	ProjectSection(SolutionItems) = preProject
-		Share\Options\OptionsBase.cs = Share\Options\OptionsBase.cs
-		Share\Options\RemoteCommandOptions.cs = Share\Options\RemoteCommandOptions.cs
-		Share\Options\TransmitOptions.cs = Share\Options\TransmitOptions.cs
-		Share\Options\Tx16TransmitOptions.cs = Share\Options\Tx16TransmitOptions.cs
-		Share\Options\Tx64TransmitOptions.cs = Share\Options\Tx64TransmitOptions.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Request", "Request", "{656295BD-6F3A-4B97-8914-5AB62BE92D8C}"
-	ProjectSection(SolutionItems) = preProject
-		Share\Request\ATCommandRequest.cs = Share\Request\ATCommandRequest.cs
-		Share\Request\CommandRequestBase.cs = Share\Request\CommandRequestBase.cs
-		Share\Request\IOCDetectionConfigRequest.cs = Share\Request\IOCDetectionConfigRequest.cs
-		Share\Request\PinConfigurationRequest.cs = Share\Request\PinConfigurationRequest.cs
-		Share\Request\RemoteATCommandRequest.cs = Share\Request\RemoteATCommandRequest.cs
-		Share\Request\RemoteIODetectionConfigRequest.cs = Share\Request\RemoteIODetectionConfigRequest.cs
-		Share\Request\RemotePinConfigurationRequest.cs = Share\Request\RemotePinConfigurationRequest.cs
-		Share\Request\TxBase.cs = Share\Request\TxBase.cs
-		Share\Request\TxPayloadBase.cs = Share\Request\TxPayloadBase.cs
-		Share\Request\XBeeTx16Request.cs = Share\Request\XBeeTx16Request.cs
-		Share\Request\XBeeTx64Request.cs = Share\Request\XBeeTx64Request.cs
-		Share\Request\ZigBeeExplicitTxRequest.cs = Share\Request\ZigBeeExplicitTxRequest.cs
-		Share\Request\ZigBeeTxRequest.cs = Share\Request\ZigBeeTxRequest.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Type", "Type", "{A6C9BA36-844C-4787-AC3A-5C419A283EA9}"
-	ProjectSection(SolutionItems) = preProject
-		Share\Type\API_IDENTIFIER.cs = Share\Type\API_IDENTIFIER.cs
-		Share\Type\APIMode.cs = Share\Type\APIMode.cs
-		Share\Type\ATCommand.cs = Share\Type\ATCommand.cs
-		Share\Type\DeviceType.cs = Share\Type\DeviceType.cs
-		Share\Type\OneWireSensor.cs = Share\Type\OneWireSensor.cs
-		Share\Type\SourceEvent.cs = Share\Type\SourceEvent.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Status", "Status", "{39D5086C-BFEE-4451-86E6-5B22B37150E4}"
-	ProjectSection(SolutionItems) = preProject
-		Share\Status\CommandStatus.cs = Share\Status\CommandStatus.cs
-		Share\Status\DeliveryStatus.cs = Share\Status\DeliveryStatus.cs
-		Share\Status\ModemStatus.cs = Share\Status\ModemStatus.cs
-		Share\Status\ReceiveStatus.cs = Share\Status\ReceiveStatus.cs
-		Share\Status\ZigBeeDiscoveryStatus.cs = Share\Status\ZigBeeDiscoveryStatus.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Response", "Response", "{5916CDDA-CA37-4F8F-95CA-38A7F47A2078}"
-	ProjectSection(SolutionItems) = preProject
-		Share\Response\ATCommandResponse.cs = Share\Response\ATCommandResponse.cs
-		Share\Response\CommandResponseBase.cs = Share\Response\CommandResponseBase.cs
-		Share\Response\ModemStatusResponse.cs = Share\Response\ModemStatusResponse.cs
-		Share\Response\NodeIdentificationResponse.cs = Share\Response\NodeIdentificationResponse.cs
-		Share\Response\RemoteCommandResponse.cs = Share\Response\RemoteCommandResponse.cs
-		Share\Response\RxBase.cs = Share\Response\RxBase.cs
-		Share\Response\RxIOSampleBase.cs = Share\Response\RxIOSampleBase.cs
-		Share\Response\RxPayloadBase.cs = Share\Response\RxPayloadBase.cs
-		Share\Response\SensorReadResponse.cs = Share\Response\SensorReadResponse.cs
-		Share\Response\TxStatusBase.cs = Share\Response\TxStatusBase.cs
-		Share\Response\XBeeRx16IOSampleResponse.cs = Share\Response\XBeeRx16IOSampleResponse.cs
-		Share\Response\XBeeRx16Response.cs = Share\Response\XBeeRx16Response.cs
-		Share\Response\XBeeRx64IOSampleResponse.cs = Share\Response\XBeeRx64IOSampleResponse.cs
-		Share\Response\XBeeRx64Response.cs = Share\Response\XBeeRx64Response.cs
-		Share\Response\XBeeTxStatusResponse.cs = Share\Response\XBeeTxStatusResponse.cs
-		Share\Response\ZigBeeExplicitRxResponse.cs = Share\Response\ZigBeeExplicitRxResponse.cs
-		Share\Response\ZigBeeIOSampleResponse.cs = Share\Response\ZigBeeIOSampleResponse.cs
-		Share\Response\ZigBeeRxResponse.cs = Share\Response\ZigBeeRxResponse.cs
-		Share\Response\ZigBeeTxStatusResponse.cs = Share\Response\ZigBeeTxStatusResponse.cs
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -147,13 +62,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{A82A4E80-C36C-4ABF-9F49-CDE7CA9133AD} = {874A30FC-D889-4A67-8AEA-9896172E0FAD}
-		{9F3BE649-42A1-40D8-ABC2-E03233392327} = {874A30FC-D889-4A67-8AEA-9896172E0FAD}
-		{656295BD-6F3A-4B97-8914-5AB62BE92D8C} = {874A30FC-D889-4A67-8AEA-9896172E0FAD}
-		{A6C9BA36-844C-4787-AC3A-5C419A283EA9} = {874A30FC-D889-4A67-8AEA-9896172E0FAD}
-		{39D5086C-BFEE-4451-86E6-5B22B37150E4} = {874A30FC-D889-4A67-8AEA-9896172E0FAD}
-		{5916CDDA-CA37-4F8F-95CA-38A7F47A2078} = {874A30FC-D889-4A67-8AEA-9896172E0FAD}
 	EndGlobalSection
 EndGlobal

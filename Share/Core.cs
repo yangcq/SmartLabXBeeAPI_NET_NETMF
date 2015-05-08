@@ -2,7 +2,7 @@ using System.IO.Ports;
 using System.Threading;
 using SmartLab.XBee.Device;
 using SmartLab.XBee.Options;
-using SmartLab.XBee.Response;
+using SmartLab.XBee.Indicator;
 using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee
@@ -11,41 +11,45 @@ namespace SmartLab.XBee
     public delegate void ChecksumErrorHandler(APIFrame e);
     public delegate void UndefinedPacketHandler(APIFrame e);
 
-    public delegate void ATCommandResponseHandler(ATCommandResponse e);
-    public delegate void ModemStatusResponseHandler(ModemStatusResponse e);
-    public delegate void NodeIdentificationResponseHandler(NodeIdentificationResponse e);
-    public delegate void RemoteCommandResponseHandler(RemoteCommandResponse e);
-    public delegate void XBeeIODataSampleRx16ResponseHandler(XBeeRx16IOSampleResponse e);
-    public delegate void XBeeIODataSampleRx64ResponseHandler(XBeeRx64IOSampleResponse e);
-    public delegate void XBeeRx16IndicatorHandler(XBeeRx16Response e);
-    public delegate void XBeeRx64IndicatorHandler(XBeeRx64Response e);
-    public delegate void XBeeSensorReadResponseHandler(SensorReadResponse e);
-    public delegate void XBeeTransmitStatusResponseHandler(XBeeTxStatusResponse e);
-    public delegate void ZigBeeExplicitRxResponseHandler(ZigBeeExplicitRxResponse e);
-    public delegate void ZigBeeIODataSampleRXResponseHandler(ZigBeeIOSampleResponse e);
-    public delegate void ZigBeeReceivePacketResponseHandler(ZigBeeRxResponse e);
-    public delegate void ZigBeeTransmitStatusResponseHandler(ZigBeeTxStatusResponse e);
+    public delegate void ATCommandIndicatorHandler(ATCommandIndicator indicator);
+    public delegate void ModemStatusIndicatorHandler(ModemStatusIndicator indicator);
+    public delegate void NodeIdentificationIndicatorHandler(NodeIdentificationIndicator indicator);
+    public delegate void RemoteCommandIndicatorHandler(RemoteCommandIndicator indicator);
+    public delegate void XBeeRx16IOSampleIndicatorHandler(XBeeRx16IOSampleIndicator indicator);
+    public delegate void XBeeRx64IOSampleIndicatorHandler(XBeeRx64IOSampleIndicator indicator);
+    public delegate void XBeeRx16IndicatorHandler(XBeeRx16Indicator indicator);
+    public delegate void XBeeRx64IndicatorHandler(XBeeRx64Indicator indicator);
+    public delegate void SensorReadIndicatorHandler(SensorReadIndicator indicator);
+    public delegate void XBeeTxStatusIndicatorHandler(XBeeTxStatusIndicator indicator);
+    public delegate void ZigBeeExplicitRxIndicatorHandler(ZigBeeExplicitRxIndicator indicator);
+    public delegate void ZigBeeIOSampleIndicatorHandler(ZigBeeIOSampleIndicator indicator);
+    public delegate void ZigBeeRxIndicatorHandler(ZigBeeRxIndicator indicator);
+    public delegate void ZigBeeTxStatusIndicatorHandler(ZigBeeTxStatusIndicator indicator);
+    public delegate void ManyToOneRouteIndicatorHandler(ManyToOneRouteIndicator indicator);
+    public delegate void RouteRecordIndicatorHandler(RouteRecordIndicator indicator);
     #endregion
 
     public class Core
     {
-        public event ChecksumErrorHandler onChecksumError;
-        public event UndefinedPacketHandler onUndefinedPacket;
+        public event ChecksumErrorHandler onChecksumErrorIndicator;
+        public event UndefinedPacketHandler onUndefinedPacketIndicator;
 
-        public event ATCommandResponseHandler onATCommandResponse;
-        public event ModemStatusResponseHandler onModemStatusResponse;
-        public event NodeIdentificationResponseHandler onNodeIdentificationResponse;
-        public event RemoteCommandResponseHandler onRemoteCommandResponse;
-        public event XBeeIODataSampleRx16ResponseHandler onXBeeIODataSampleRx16Response;
-        public event XBeeIODataSampleRx64ResponseHandler onXBeeIODataSampleRx64Response;
+        public event ATCommandIndicatorHandler onATCommandIndicator;
+        public event ModemStatusIndicatorHandler onModemStatusIndicator;
+        public event NodeIdentificationIndicatorHandler onNodeIdentificationIndicator;
+        public event RemoteCommandIndicatorHandler onRemoteCommandIndicator;
+        public event XBeeRx16IOSampleIndicatorHandler onXBeeRx16IOSampleIndicator;
+        public event XBeeRx64IOSampleIndicatorHandler onXBeeRx64IOSampleIndicator;
         public event XBeeRx16IndicatorHandler onXBeeRx16Indicator;
         public event XBeeRx64IndicatorHandler onXBeeRx64Indicator;
-        public event XBeeSensorReadResponseHandler onXBeeSensorReadResponse;
-        public event XBeeTransmitStatusResponseHandler onXBeeTransmitStatusResponse;
-        public event ZigBeeExplicitRxResponseHandler onZigBeeExplicitRxResponse;
-        public event ZigBeeIODataSampleRXResponseHandler onZigBeeIODataSampleRXResponse;
-        public event ZigBeeReceivePacketResponseHandler onZigBeeReceivePacketResponse;
-        public event ZigBeeTransmitStatusResponseHandler onZigBeeTransmitStatusResponse;
+        public event SensorReadIndicatorHandler onSensorReadIndicator;
+        public event XBeeTxStatusIndicatorHandler onXBeeTxStatusIndicator;
+        public event ZigBeeExplicitRxIndicatorHandler onZigBeeExplicitRxIndicator;
+        public event ZigBeeIOSampleIndicatorHandler onZigBeeIOSampleIndicator;
+        public event ZigBeeRxIndicatorHandler onZigBeeRxIndicator;
+        public event ZigBeeTxStatusIndicatorHandler onZigBeeTxStatusIndicator;
+        public event ManyToOneRouteIndicatorHandler onManyToOneRequestIndicator;
+        public event RouteRecordIndicatorHandler onRouteRecordIndicator;
 
         private const byte KEY = 0x7E;
         private const byte ESCAPED = 0x7D;
@@ -74,7 +78,6 @@ namespace SmartLab.XBee
             this.mode = mode;
             this.response = new APIFrame(INITIAL_FRAME_LENGTH);
             this.request = new APIFrame(INITIAL_FRAME_LENGTH);
-            this.serial.Open();
         }
 
         #region General Function
@@ -96,6 +99,10 @@ namespace SmartLab.XBee
             if (!isRunning)
             {
                 isRunning = true;
+
+                if (!serial.IsOpen())
+                    this.serial.Open();
+
                 new Thread(readingThread).Start();
             }
         }
@@ -118,7 +125,7 @@ namespace SmartLab.XBee
         /// <param name="request"></param>
         public void Send(APIFrame request)
         {
-            if (!serial.IsOpen())
+            if (!isRunning)
                 return;
 
             lock (serial)
@@ -144,9 +151,9 @@ namespace SmartLab.XBee
 
         #region Advance Function
 
-        public XBeeTxStatusResponse SendXBeeTx16(Address remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx16(remoteAddress, option, payload, 0, payload.Length); }
+        public XBeeTxStatusIndicator SendXBeeTx16(Address remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx16(remoteAddress, option, payload, 0, payload.Length); }
 
-        public XBeeTxStatusResponse SendXBeeTx16(Address remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        public XBeeTxStatusIndicator SendXBeeTx16(Address remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -174,12 +181,12 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new XBeeTxStatusResponse(request);
+            return new XBeeTxStatusIndicator(request);
         }
 
-        public XBeeTxStatusResponse SendXBeeTx64(Address remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx64(remoteAddress, option, payload, 0, payload.Length); }
+        public XBeeTxStatusIndicator SendXBeeTx64(Address remoteAddress, OptionsBase option, byte[] payload) { return SendXBeeTx64(remoteAddress, option, payload, 0, payload.Length); }
 
-        public XBeeTxStatusResponse SendXBeeTx64(Address remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        public XBeeTxStatusIndicator SendXBeeTx64(Address remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -206,10 +213,10 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new XBeeTxStatusResponse(request);
+            return new XBeeTxStatusIndicator(request);
         }
 
-        public ATCommandResponse SendATCommand(ATCommand command, bool applyChange, byte[] parameter = null)
+        public ATCommandIndicator SendATCommand(ATCommand command, bool applyChange, byte[] parameter = null)
         {
             if (parameter == null)
                 return SendATCommand(command, applyChange, parameter, 0, 0);
@@ -217,7 +224,7 @@ namespace SmartLab.XBee
                 return SendATCommand(command, applyChange, parameter, 0, parameter.Length);
         }
 
-        public ATCommandResponse SendATCommand(ATCommand command, bool applyChange, byte[] parameter, int offset, int length)
+        public ATCommandIndicator SendATCommand(ATCommand command, bool applyChange, byte[] parameter, int offset, int length)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -246,10 +253,10 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new ATCommandResponse(request);
+            return new ATCommandIndicator(request);
         }
 
-        public RemoteCommandResponse SendRemoteATCommand(Address remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter = null)
+        public RemoteCommandIndicator SendRemoteATCommand(Address remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter = null)
         {
             if (parameter == null)
                 return SendRemoteATCommand(remoteAddress, command, transmitOptions, parameter, 0, 0);
@@ -257,7 +264,7 @@ namespace SmartLab.XBee
                 return SendRemoteATCommand(remoteAddress, command, transmitOptions, parameter, 0, parameter.Length);
         }
 
-        public RemoteCommandResponse SendRemoteATCommand(Address remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter, int parameterOffset, int parameterLength)
+        public RemoteCommandIndicator SendRemoteATCommand(Address remoteAddress, ATCommand command, OptionsBase transmitOptions, byte[] parameter, int parameterOffset, int parameterLength)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -288,12 +295,12 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new RemoteCommandResponse(request);
+            return new RemoteCommandIndicator(request);
         }
 
-        public ZigBeeTxStatusResponse SendZigBeeTx(Address remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeTx(remoteAddress, option, payload, 0, payload.Length); }
+        public ZigBeeTxStatusIndicator SendZigBeeTx(Address remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeTx(remoteAddress, option, payload, 0, payload.Length); }
 
-        public ZigBeeTxStatusResponse SendZigBeeTx(Address remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        public ZigBeeTxStatusIndicator SendZigBeeTx(Address remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -321,12 +328,12 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new ZigBeeTxStatusResponse(request);
+            return new ZigBeeTxStatusIndicator(request);
         }
 
-        public ZigBeeTxStatusResponse SendZigBeeExplicitTx(ExplicitAddress remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeExplicitTx(remoteAddress, option, payload, 0, payload.Length); }
+        public ZigBeeTxStatusIndicator SendZigBeeExplicitTx(ExplicitAddress remoteAddress, OptionsBase option, byte[] payload) { return SendZigBeeExplicitTx(remoteAddress, option, payload, 0, payload.Length); }
 
-        public ZigBeeTxStatusResponse SendZigBeeExplicitTx(ExplicitAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
+        public ZigBeeTxStatusIndicator SendZigBeeExplicitTx(ExplicitAddress remoteAddress, OptionsBase option, byte[] payload, int offset, int length)
         {
             waitFrameID++;
             if (waitFrameID == 0)
@@ -355,16 +362,16 @@ namespace SmartLab.XBee
                 return null;
             }
 
-            return new ZigBeeTxStatusResponse(request);
+            return new ZigBeeTxStatusIndicator(request);
         }
 
-        public ATCommandResponse SetPinFunction(Pin pin, Pin.Functions function) { return SendATCommand(new ATCommand(pin.COMMAND), true, new byte[] { (byte)function }); }
+        public ATCommandIndicator SetPinFunction(Pin pin, Pin.Functions function) { return SendATCommand(new ATCommand(pin.COMMAND), true, new byte[] { (byte)function }); }
 
-        public ATCommandResponse SetIODetection(Pin[] pins) { return SendATCommand(ATCommand.Digital_IO_Change_Detection, true, Pin.IOChangeDetectionConfiguration(pins)); }
+        public ATCommandIndicator SetIODetection(Pin[] pins) { return SendATCommand(ATCommand.Digital_IO_Change_Detection, true, Pin.IOChangeDetectionConfiguration(pins)); }
 
-        public RemoteCommandResponse SetRemotePinFunction(Address remoteAddress, Pin pin, Pin.Functions function) { return SendRemoteATCommand(remoteAddress, new ATCommand(pin.COMMAND), RemoteCommandOptions.ApplyChanges, new byte[] { (byte)function }); }
+        public RemoteCommandIndicator SetRemotePinFunction(Address remoteAddress, Pin pin, Pin.Functions function) { return SendRemoteATCommand(remoteAddress, new ATCommand(pin.COMMAND), RemoteCommandOptions.ApplyChanges, new byte[] { (byte)function }); }
 
-        public RemoteCommandResponse SetRemoteIODetection(Address remoteAddress, Pin[] pins) { return SendRemoteATCommand(remoteAddress, ATCommand.Digital_IO_Change_Detection, RemoteCommandOptions.ApplyChanges, Pin.IOChangeDetectionConfiguration(pins)); }
+        public RemoteCommandIndicator SetRemoteIODetection(Address remoteAddress, Pin[] pins) { return SendRemoteATCommand(remoteAddress, ATCommand.Digital_IO_Change_Detection, RemoteCommandOptions.ApplyChanges, Pin.IOChangeDetectionConfiguration(pins)); }
 
         #endregion
 
@@ -376,8 +383,8 @@ namespace SmartLab.XBee
             {
                 if (!response.VerifyChecksum())
                 {
-                    if (onChecksumError != null)
-                        onChecksumError(response);
+                    if (onChecksumErrorIndicator != null)
+                        onChecksumErrorIndicator(response);
                     return;
                 }
             }
@@ -395,66 +402,72 @@ namespace SmartLab.XBee
             {
                 case API_IDENTIFIER.Rx64_Receive_Packet:
                     if (onXBeeRx64Indicator != null)
-                        onXBeeRx64Indicator(new XBeeRx64Response(response));
+                        onXBeeRx64Indicator(new XBeeRx64Indicator(response));
                     break;
                 case API_IDENTIFIER.Rx16_Receive_Packet:
                     if (onXBeeRx16Indicator != null)
-                        onXBeeRx16Indicator(new XBeeRx16Response(response));
+                        onXBeeRx16Indicator(new XBeeRx16Indicator(response));
                     break;
                 case API_IDENTIFIER.Rx64_IO_Data_Sample_Rx_Indicator:
-                    if (onXBeeIODataSampleRx64Response != null)
-                        onXBeeIODataSampleRx64Response(new XBeeRx64IOSampleResponse(response));
+                    if (onXBeeRx64IOSampleIndicator != null)
+                        onXBeeRx64IOSampleIndicator(new XBeeRx64IOSampleIndicator(response));
                     break;
                 case API_IDENTIFIER.Rx16_IO_Data_Sample_Rx_Indicator:
-                    if (onXBeeIODataSampleRx16Response != null)
-                        onXBeeIODataSampleRx16Response(new XBeeRx16IOSampleResponse(response));
+                    if (onXBeeRx16IOSampleIndicator != null)
+                        onXBeeRx16IOSampleIndicator(new XBeeRx16IOSampleIndicator(response));
                     break;
                 case API_IDENTIFIER.XBee_Transmit_Status:
-                    if (onXBeeTransmitStatusResponse != null)
-                        onXBeeTransmitStatusResponse(new XBeeTxStatusResponse(response));
+                    if (onXBeeTxStatusIndicator != null)
+                        onXBeeTxStatusIndicator(new XBeeTxStatusIndicator(response));
                     break;
                 case API_IDENTIFIER.AT_Command_Response:
-                    if (onATCommandResponse != null)
-                        onATCommandResponse(new ATCommandResponse(response));
+                    if (onATCommandIndicator != null)
+                        onATCommandIndicator(new ATCommandIndicator(response));
                     break;
                 case API_IDENTIFIER.Modem_Status:
-                    if (onModemStatusResponse != null)
-                        onModemStatusResponse(new ModemStatusResponse(response));
+                    if (onModemStatusIndicator != null)
+                        onModemStatusIndicator(new ModemStatusIndicator(response));
                     break;
                 case API_IDENTIFIER.ZigBee_Transmit_Status:
-                    if (onZigBeeTransmitStatusResponse != null)
-                        onZigBeeTransmitStatusResponse(new ZigBeeTxStatusResponse(response));
+                    if (onZigBeeTxStatusIndicator != null)
+                        onZigBeeTxStatusIndicator(new ZigBeeTxStatusIndicator(response));
                     break;
                 case API_IDENTIFIER.ZigBee_Receive_Packet:
-                    if (onZigBeeReceivePacketResponse != null)
-                        onZigBeeReceivePacketResponse(new ZigBeeRxResponse(response));
+                    if (onZigBeeRxIndicator != null)
+                        onZigBeeRxIndicator(new ZigBeeRxIndicator(response));
                     break;
                 case API_IDENTIFIER.ZigBee_Explicit_Rx_Indicator:
-                    if (onZigBeeExplicitRxResponse != null)
-                        onZigBeeExplicitRxResponse(new ZigBeeExplicitRxResponse(response));
+                    if (onZigBeeExplicitRxIndicator != null)
+                        onZigBeeExplicitRxIndicator(new ZigBeeExplicitRxIndicator(response));
                     break;
                 case API_IDENTIFIER.ZigBee_IO_Data_Sample_Rx_Indicator:
-                    if (onZigBeeIODataSampleRXResponse != null)
-                        onZigBeeIODataSampleRXResponse(new ZigBeeIOSampleResponse(response));
+                    if (onZigBeeIOSampleIndicator != null)
+                        onZigBeeIOSampleIndicator(new ZigBeeIOSampleIndicator(response));
                     break;
                 case API_IDENTIFIER.XBee_Sensor_Read_Indicato:
-                    if (onXBeeSensorReadResponse != null)
-                        onXBeeSensorReadResponse(new SensorReadResponse(response));
+                    if (onSensorReadIndicator != null)
+                        onSensorReadIndicator(new SensorReadIndicator(response));
                     break;
                 case API_IDENTIFIER.Node_Identification_Indicator:
-                    if (onNodeIdentificationResponse != null)
-                        onNodeIdentificationResponse(new NodeIdentificationResponse(response));
+                    if (onNodeIdentificationIndicator != null)
+                        onNodeIdentificationIndicator(new NodeIdentificationIndicator(response));
                     break;
                 case API_IDENTIFIER.Remote_Command_Response:
-                    if (onRemoteCommandResponse != null)
-                        onRemoteCommandResponse(new RemoteCommandResponse(response));
+                    if (onRemoteCommandIndicator != null)
+                        onRemoteCommandIndicator(new RemoteCommandIndicator(response));
                     break;
-                case API_IDENTIFIER.Over_the_Air_Firmware_Update_Status: break;
-                case API_IDENTIFIER.Route_Record_Indicator: break;
-                case API_IDENTIFIER.Many_to_One_Route_Request_Indicator: break;
+                case API_IDENTIFIER.Route_Record_Indicator:
+                    if (onRouteRecordIndicator != null)
+                        onRouteRecordIndicator(new RouteRecordIndicator(response));
+                    break;
+                case API_IDENTIFIER.Many_to_One_Route_Request_Indicator:
+                    if (onManyToOneRequestIndicator != null)
+                        onManyToOneRequestIndicator(new ManyToOneRouteIndicator(response));
+                    break;
+                case API_IDENTIFIER.Create_Source_Route: break;
                 default:
-                    if (onUndefinedPacket != null)
-                        onUndefinedPacket(response); break;
+                    if (onUndefinedPacketIndicator != null)
+                        onUndefinedPacketIndicator(response); break;
             }
         }
 

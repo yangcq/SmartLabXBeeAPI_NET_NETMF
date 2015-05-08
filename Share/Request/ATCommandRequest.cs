@@ -43,14 +43,17 @@ namespace SmartLab.XBee.Request
                 SetFrameType(API_IDENTIFIER.AT_Command_Queue_Parameter_Value);
         }
 
-        public override void SetCommand(ATCommand command) { this.SetContent(2, command.GetValue()); }
-
-        public override void SetParameter(byte[] parameter) { this.SetContent(4, parameter, 0, parameter.Length); }
-
-        public override void SetParameter(byte[] parameter, int offset, int length) 
+        public override void SetCommand(ATCommand command)
         {
-            this.SetContent(4, parameter, offset, length);
-            this.SetPosition(4 + length - offset);
+            this.SetContent(2, command.GetValue());
+        }
+
+        public override void SetParameter(byte[] parameter) { this.SetParameter(parameter, 0 , parameter.Length); }
+
+        public override void SetParameter(byte[] parameter, int offset, int length)
+        {
+            this.SetPosition(4);
+            this.SetContent(parameter, offset, length);
         }
     }
 }

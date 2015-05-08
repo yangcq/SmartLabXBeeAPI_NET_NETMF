@@ -37,7 +37,10 @@ namespace SmartLab.XBee.Request
                 this.SetContent(parameter, parameterOffset, parameterLength);
         }
 
-        public void SetTransmitOptions(OptionsBase TransmitOptions) { this.SetContent(12, TransmitOptions.GetValue()); }
+        public void SetTransmitOptions(OptionsBase TransmitOptions)
+        {
+            this.SetContent(12, TransmitOptions.GetValue());
+        }
 
         public override void SetAppleChanges(bool appleChanges)
         {
@@ -46,16 +49,22 @@ namespace SmartLab.XBee.Request
             else this.GetFrameData()[12] &= 0xFD;
         }
 
-        public override void SetCommand(ATCommand command) { this.SetContent(13, command.GetValue()); }
+        public override void SetCommand(ATCommand command)
+        {
+            this.SetContent(13, command.GetValue());
+        }
 
-        public override void SetParameter(byte[] parameter) { this.SetContent(15, parameter, 0, parameter.Length); }
+        public override void SetParameter(byte[] parameter) { this.SetParameter(parameter, 0, parameter.Length); }
 
         public override void SetParameter(byte[] parameter, int offset, int length)
         {
-            this.SetContent(15, parameter, offset, length);
-            this.SetPosition(15 + length - offset);
+            this.SetPosition(15);
+            this.SetContent(parameter, offset, length);
         }
 
-        public void SetRemoteAddress(Address remoteAddress) { this.SetContent(2, remoteAddress.GetAddressValue()); }
+        public void SetRemoteAddress(Address remoteAddress)
+        {
+            this.SetContent(2, remoteAddress.GetAddressValue());
+        }
     }
 }

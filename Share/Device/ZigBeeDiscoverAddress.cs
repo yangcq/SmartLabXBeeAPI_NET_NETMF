@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using SmartLab.XBee.Response;
+using SmartLab.XBee.Indicator;
 using SmartLab.XBee.Type;
 using System;
 

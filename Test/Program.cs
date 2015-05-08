@@ -7,7 +7,7 @@ using SmartLab.XBee.Type;
 using SmartLab.XBee.Request;
 using SmartLab.XBee.Options;
 using System.Globalization;
-using SmartLab.XBee.Response;
+using SmartLab.XBee.Indicator;
 using System.IO.Ports;
 using System.Collections;
 using SmartLab.XBee.Status;
@@ -59,25 +59,28 @@ namespace Test
             Console.WriteLine("+ [Send Remote AT Command Request] : rat SH SL NET command parameter");
             Console.WriteLine("+ [Send ZigBee Tx Request] : s SH SL NET payload");
             Console.WriteLine("+ [Send Explicit ZigBee Tx Request] : se SH SL NET SE DE CID PID payload");
+            Console.WriteLine("+ [Create Source Route] : csr SH SL NET addresses");
             Console.WriteLine("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\r\n");
 
             // 1 byte of SourceEndpoint + 1 byte of DestinationEndpoint + 2 bytes of ClusterID + 2 bytes of ProfileID
 
             xbee.VerifyChecksum = true;
-            xbee.onModemStatusResponse += new ModemStatusResponseHandler(xbee_onModemStatusResponse);
-            xbee.onNodeIdentificationResponse += new NodeIdentificationResponseHandler(xbee_onNodeIdentificationResponse);
-            xbee.onZigBeeTransmitStatusResponse += new ZigBeeTransmitStatusResponseHandler(xbee_onZigBeeTransmitStatusResponse);
-            xbee.onZigBeeReceivePacketResponse += new ZigBeeReceivePacketResponseHandler(xbee_onZigBeeReceivePacketResponse);
-            xbee.onATCommandResponse += new ATCommandResponseHandler(xbee_onATCommandResponse);
-            xbee.onXBeeTransmitStatusResponse += new XBeeTransmitStatusResponseHandler(xbee_onXBeeTransmitStatusResponse);
+            xbee.onModemStatusIndicator += new ModemStatusIndicatorHandler(xbee_onModemStatusResponse);
+            xbee.onNodeIdentificationIndicator += new NodeIdentificationIndicatorHandler(xbee_onNodeIdentificationResponse);
+            xbee.onZigBeeTxStatusIndicator += new ZigBeeTxStatusIndicatorHandler(xbee_onZigBeeTransmitStatusResponse);
+            xbee.onZigBeeRxIndicator += new ZigBeeRxIndicatorHandler(xbee_onZigBeeReceivePacketResponse);
+            xbee.onATCommandIndicator += new ATCommandIndicatorHandler(xbee_onATCommandResponse);
+            xbee.onXBeeTxStatusIndicator += new XBeeTxStatusIndicatorHandler(xbee_onXBeeTransmitStatusResponse);
             xbee.onXBeeRx16Indicator += new XBeeRx16IndicatorHandler(xbee_onXBeeRx16Indicator);
             xbee.onXBeeRx64Indicator += new XBeeRx64IndicatorHandler(xbee_onXBeeRx64Indicator);
-            xbee.onRemoteCommandResponse += new RemoteCommandResponseHandler(xbee_onRemoteCommandResponse);
-            xbee.onXBeeIODataSampleRx16Response += new XBeeIODataSampleRx16ResponseHandler(xbee_onXBeeIODataSampleRx16Response);
-            xbee.onXBeeIODataSampleRx64Response += new XBeeIODataSampleRx64ResponseHandler(xbee_onXBeeIODataSampleRx64Response);
-            xbee.onZigBeeIODataSampleRXResponse += new ZigBeeIODataSampleRXResponseHandler(xbee_onZigBeeIODataSampleRXResponse);
-            xbee.onZigBeeExplicitRxResponse += new ZigBeeExplicitRxResponseHandler(xbee_onZigBeeExplicitRxResponse);
+            xbee.onRemoteCommandIndicator += new RemoteCommandIndicatorHandler(xbee_onRemoteCommandResponse);
+            xbee.onXBeeRx16IOSampleIndicator += new XBeeRx16IOSampleIndicatorHandler(xbee_onXBeeIODataSampleRx16Response);
+            xbee.onXBeeRx64IOSampleIndicator += new XBeeRx64IOSampleIndicatorHandler(xbee_onXBeeIODataSampleRx64Response);
+            xbee.onZigBeeIOSampleIndicator += new ZigBeeIOSampleIndicatorHandler(xbee_onZigBeeIODataSampleRXResponse);
+            xbee.onZigBeeExplicitRxIndicator += new ZigBeeExplicitRxIndicatorHandler(xbee_onZigBeeExplicitRxResponse);
 
+            xbee.onManyToOneRequestIndicator += new ManyToOneRouteIndicatorHandler(xbee_onManyToOneRequestIndicator);
+            xbee.onRouteRecordIndicator += new RouteRecordIndicatorHandler(xbee_onRouteRecordIndicator);
             xbee.Start();
 
             Console.Write("<< ");
@@ -90,13 +93,13 @@ namespace Test
                 switch (lines[0].ToLower())
                 {
                     case "s16":
-                        if (lines.Length == 3)
+                        if (lines.Length >= 3)
                             TX16(lines);
                         else Console.WriteLine(">> wrong format!\r\n");
                         break;
 
                     case "s64":
-                        if (lines.Length == 4)
+                        if (lines.Length >= 4)
                             TX64(lines);
                         else Console.WriteLine(">> wrong format!\r\n");
                         break;
@@ -114,14 +117,21 @@ namespace Test
                         break;
 
                     case "s":
-                        if (lines.Length == 5)
+                        if (lines.Length >= 5)
                             S(lines);
                         else Console.WriteLine(">> wrong format!\r\n");
                         break;
 
                     case "se":
-                        if (lines.Length == 9)
+                        if (lines.Length >= 9)
                             SE(lines);
+                        else Console.WriteLine(">> wrong format!\r\n");
+                        break;
+
+
+                    case "csr":
+                        if (lines.Length >= 5)
+                            CSR(lines);
                         else Console.WriteLine(">> wrong format!\r\n");
                         break;
 
@@ -136,14 +146,49 @@ namespace Test
             xbee.Stop();
         }
 
+        static void xbee_onRouteRecordIndicator(RouteRecordIndicator indicator)
+        {
+            Address add = indicator.GetRemoteDevice();
+            Console.WriteLine("\r\n>> Route record indicator : From " + add.GetSerialNumberHigh().ToString("X2") + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2"));
+            Console.WriteLine(">> Number of address : " + indicator.GetNumberOfAddresses());
+            foreach (int entry in indicator.GetAddresses())
+                Console.WriteLine(">> " + entry.ToString("X2"));
+        }
+
+        static void xbee_onManyToOneRequestIndicator(ManyToOneRouteIndicator indicator)
+        {
+            Address add = indicator.GetRemoteDevice();
+            Console.WriteLine("\r\n>> Many to one route request : From " + add.GetSerialNumberHigh().ToString("X2") + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2") + "\r\n");
+        }
+
+        static void CSR(string[] lines)
+        {
+            int addressh = int.Parse(lines[1], NumberStyles.HexNumber);
+            int addressl = int.Parse(lines[2], NumberStyles.HexNumber);
+            int net = int.Parse(lines[3], NumberStyles.HexNumber);
+            remote.SetSerialNumberHigh(addressh);
+            remote.SetSerialNumberLow(addressl);
+            remote.SetNetworkAddress(net);
+
+            int[] addresses = new int[lines.Length - 4];
+            for (int i = 4; i< lines.Length; i++)
+                addresses[i - 4] = int.Parse(lines[i], NumberStyles.HexNumber);
+
+            CreateSourceRouteRequest re = new CreateSourceRouteRequest(0x10, remote, addresses);
+            xbee.Send(re);
+        }
+
         static void TX16(string[] lines)
         {
             int address = int.Parse(lines[1], NumberStyles.HexNumber);
             remote.SetNetworkAddress(address);
 
-            byte[] data = GetBytes(lines[2]);
+            string datas = lines[2];
+            for (int i = 3; i < lines.Length; i++)
+                datas += " " + lines[i];
+            byte[] data = GetBytes(datas);
 
-            XBeeTxStatusResponse re = xbee.SendXBeeTx16(remote, OptionsBase.DEFAULT, data);
+            XBeeTxStatusIndicator re = xbee.SendXBeeTx16(remote, OptionsBase.DEFAULT, data);
 
             if (re == null)
                 Console.WriteLine(">> ERROR : Tx16 response time out\r\n");
@@ -158,9 +203,12 @@ namespace Test
             remote.SetSerialNumberHigh(addressh);
             remote.SetSerialNumberLow(addressl);
 
-            byte[] data = GetBytes(lines[3]);
+            string datas = lines[3];
+            for (int i = 4; i < lines.Length; i++)
+                datas += " " + lines[i];
+            byte[] data = GetBytes(datas);
 
-            XBeeTxStatusResponse re = xbee.SendXBeeTx64(remote, OptionsBase.DEFAULT, data);
+            XBeeTxStatusIndicator re = xbee.SendXBeeTx64(remote, OptionsBase.DEFAULT, data);
 
             if (re == null)
                 Console.WriteLine(">> ERROR : Tx64 response time out\r\n");
@@ -176,7 +224,7 @@ namespace Test
             if (lines.Length > 2)
                 data = GetBytes(lines[2]);
 
-            ATCommandResponse re = xbee.SendATCommand(com, true, data);
+            ATCommandIndicator re = xbee.SendATCommand(com, true, data);
 
             if (re == null)
                 Console.WriteLine(">> ERROR : AT command response time out\r\n");
@@ -220,7 +268,7 @@ namespace Test
             if (lines.Length > 5)
                 data = GetBytes(lines[5]);
 
-            RemoteCommandResponse re = xbee.SendRemoteATCommand(remote, com, RemoteCommandOptions.ApplyChanges, data);
+            RemoteCommandIndicator re = xbee.SendRemoteATCommand(remote, com, RemoteCommandOptions.ApplyChanges, data);
 
             if (re == null)
                 Console.WriteLine(">> ERROR : Remote AT command response time out\r\n");
@@ -258,14 +306,20 @@ namespace Test
             remote.SetSerialNumberLow(addressl);
             remote.SetNetworkAddress(net);
 
-            byte[] data = GetBytes(lines[4]);
+            string datas = lines[4];
+            for (int i = 5; i < lines.Length; i++)
+                datas += " " + lines[i];
+            byte[] data = GetBytes(datas);
 
-            ZigBeeTxStatusResponse re = xbee.SendZigBeeTx(remote, OptionsBase.DEFAULT, data);
+            ZigBeeTxStatusIndicator re = xbee.SendZigBeeTx(remote, OptionsBase.DEFAULT, data);
 
             if (re == null)
                 Console.WriteLine(">> ERROR : ZigBee Tx response time out\r\n");
             else
-                Console.WriteLine(">> " + re.GetDeliveryStatus() + "\r\n");
+            {
+                Console.WriteLine(">> Packet send to " + re.GetDestinationAddress16().ToString("X2") + " is " + re.GetDeliveryStatus());
+                Console.WriteLine(">> " + re.GetDiscoveryStatus() + "\r\n");
+            }
         }
 
         static void SE(string[] lines)
@@ -288,17 +342,23 @@ namespace Test
             remote.SetProfileID(pid);
             remote.SetClusterID(cid);
 
-            byte[] data = GetBytes(lines[8]);
+            string datas = lines[8];
+            for (int i = 9; i < lines.Length; i++)
+                datas += " " + lines[i];
+            byte[] data = GetBytes(datas);
 
-            ZigBeeTxStatusResponse re = xbee.SendZigBeeExplicitTx(remote, OptionsBase.DEFAULT, data);
+            ZigBeeTxStatusIndicator re = xbee.SendZigBeeExplicitTx(remote, OptionsBase.DEFAULT, data);
 
             if (re == null)
                 Console.WriteLine(">> ERROR : ZigBee Tx response time out\r\n");
             else
-                Console.WriteLine(">> " + re.GetDeliveryStatus() + "\r\n");
+            {
+                Console.WriteLine(">> Packet send to " + re.GetDestinationAddress16().ToString("X2") + " is " + re.GetDeliveryStatus());
+                Console.WriteLine(">> " + re.GetDiscoveryStatus() + "\r\n");
+            }
         }
 
-        static void xbee_onZigBeeReceivePacketResponse(SmartLab.XBee.Response.ZigBeeRxResponse e)
+        static void xbee_onZigBeeReceivePacketResponse(SmartLab.XBee.Indicator.ZigBeeRxIndicator e)
         {
             Address add = e.GetRemoteDevice();
             byte[] data = e.GetReceivedData();
@@ -306,12 +366,12 @@ namespace Test
             Console.WriteLine(">> " + UTF8Encoding.UTF8.GetString(data) + " [" + GetString(data) + "]\r\n");
         }
 
-        static void xbee_onZigBeeTransmitStatusResponse(SmartLab.XBee.Response.ZigBeeTxStatusResponse e)
+        static void xbee_onZigBeeTransmitStatusResponse(SmartLab.XBee.Indicator.ZigBeeTxStatusIndicator e)
         {
             Console.WriteLine("\r\n>> ZigBee Tx : " + e.GetDeliveryStatus() + "\r\n");
         }
 
-        static void xbee_onNodeIdentificationResponse(SmartLab.XBee.Response.NodeIdentificationResponse e)
+        static void xbee_onNodeIdentificationResponse(SmartLab.XBee.Indicator.NodeIdentificationIndicator e)
         {
             Address add = e.GetRemoteDevice();
             Console.WriteLine("\r\n>> node join :" + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2"));
@@ -320,23 +380,23 @@ namespace Test
             Console.WriteLine(">> Event : " + e.GetSourceEvent() + "\r\n");
         }
 
-        static void xbee_onModemStatusResponse(SmartLab.XBee.Response.ModemStatusResponse e)
+        static void xbee_onModemStatusResponse(SmartLab.XBee.Indicator.ModemStatusIndicator e)
         {
             Console.WriteLine("\r\n>> modem status " + e.GetModemStatus() + "\r\n");
         }
 
-        static void xbee_onATCommandResponse(ATCommandResponse e)
+        static void xbee_onATCommandResponse(ATCommandIndicator e)
         {
             byte[] p = e.GetParameter();
             Console.WriteLine("\r\n>> AT command " + e.GetRequestCommand() + " " + e.GetCommandStatus() + " " + (p == null ? " " : UTF8Encoding.UTF8.GetString(p)) + "\r\n");
         }
 
-        static void xbee_onXBeeTransmitStatusResponse(XBeeTxStatusResponse e)
+        static void xbee_onXBeeTransmitStatusResponse(XBeeTxStatusIndicator e)
         {
             Console.WriteLine("\r\n>> XBee Tx : " + e.GetDeliveryStatus() + "\r\n");
         }
 
-        static void xbee_onXBeeRx64Indicator(XBeeRx64Response e)
+        static void xbee_onXBeeRx64Indicator(XBeeRx64Indicator e)
         {
             Address add = e.GetRemoteDevice();
             byte[] data = e.GetReceivedData();
@@ -344,20 +404,20 @@ namespace Test
             Console.WriteLine(">> " + UTF8Encoding.UTF8.GetString(data) + " [" + GetString(data) + "]\r\n");
         }
 
-        static void xbee_onXBeeRx16Indicator(XBeeRx16Response e)
+        static void xbee_onXBeeRx16Indicator(XBeeRx16Indicator e)
         {
             byte[] data = e.GetReceivedData();
             Console.WriteLine("\r\n>> XBee Rx 16 : " + e.GetReceiveStatus() + " From " + e.GetRemoteDevice().GetNetworkAddress().ToString("X2") + " RSSI = " + e.GetRSSI());
             Console.WriteLine(">> " + UTF8Encoding.UTF8.GetString(data) + " [" + GetString(data) + "]\r\n");
         }
 
-        static void xbee_onRemoteCommandResponse(RemoteCommandResponse e)
+        static void xbee_onRemoteCommandResponse(RemoteCommandIndicator e)
         {
             byte[] p = e.GetParameter();
             Console.WriteLine("\r\n>> remote AT command " + e.GetCommandStatus() + " " + e.GetRequestCommand() + " = " + (p == null ? " " : UTF8Encoding.UTF8.GetString(p)) + "\r\n");
         }
 
-        static void xbee_onXBeeIODataSampleRx16Response(XBeeRx16IOSampleResponse e)
+        static void xbee_onXBeeIODataSampleRx16Response(XBeeRx16IOSampleIndicator e)
         {
             IOSamples samples = e.GetIOSamples();
             Address add = e.GetRemoteDevice();
@@ -370,7 +430,7 @@ namespace Test
                 Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + (int)entry.Value);
         }
 
-        static void xbee_onXBeeIODataSampleRx64Response(XBeeRx64IOSampleResponse e)
+        static void xbee_onXBeeIODataSampleRx64Response(XBeeRx64IOSampleIndicator e)
         {
             IOSamples samples = e.GetIOSamples();
             Address add = e.GetRemoteDevice();
@@ -383,7 +443,7 @@ namespace Test
                 Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
         }
 
-        static void xbee_onZigBeeIODataSampleRXResponse(ZigBeeIOSampleResponse e)
+        static void xbee_onZigBeeIODataSampleRXResponse(ZigBeeIOSampleIndicator e)
         {
             IOSamples samples = e.GetIOSamples();
             Address add = e.GetRemoteDevice();
@@ -396,7 +456,7 @@ namespace Test
                 Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
         }
 
-        static void xbee_onZigBeeExplicitRxResponse(ZigBeeExplicitRxResponse e)
+        static void xbee_onZigBeeExplicitRxResponse(ZigBeeExplicitRxIndicator e)
         {
             ExplicitAddress add = e.GetExplicitRemoteDevice();
             byte[] data = e.GetReceivedData();

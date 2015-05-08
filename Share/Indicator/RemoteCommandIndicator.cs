@@ -3,11 +3,11 @@ using SmartLab.XBee.Type;
 using SmartLab.XBee.Device;
 using System;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
-    public class RemoteCommandResponse : CommandResponseBase
+    public class RemoteCommandIndicator : CommandResponseBase
     {
-        public RemoteCommandResponse(APIFrame frame)
+        public RemoteCommandIndicator(APIFrame frame)
             : base(frame)
         { 
         }

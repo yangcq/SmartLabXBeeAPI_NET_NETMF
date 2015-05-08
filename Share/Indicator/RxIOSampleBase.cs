@@ -2,7 +2,7 @@ using SmartLab.XBee.Device;
 using SmartLab.XBee.Status;
 using System.Collections;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
     public abstract class RxIOSampleBase : RxBase
     {

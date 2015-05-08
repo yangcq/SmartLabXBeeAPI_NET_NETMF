@@ -3,11 +3,11 @@ using SmartLab.XBee.Type;
 using SmartLab.XBee.Device;
 using System;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
-    public class SensorReadResponse : RxBase
+    public class SensorReadIndicator : RxBase
     {
-        public SensorReadResponse(APIFrame frame)
+        public SensorReadIndicator(APIFrame frame)
             : base(frame)
         { }
 

@@ -2,11 +2,11 @@ using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
 using System;
 
-namespace SmartLab.XBee.Response
+namespace SmartLab.XBee.Indicator
 {
-    public class ATCommandResponse : CommandResponseBase
+    public class ATCommandIndicator : CommandResponseBase
     {
-        public ATCommandResponse(APIFrame frame)
+        public ATCommandIndicator(APIFrame frame)
             : base(frame)
         { }
 
