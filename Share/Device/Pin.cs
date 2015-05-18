@@ -23,7 +23,7 @@
             /// <summary>
             /// DO8, Either, Digital output 8, Function is not supported at the time of this release(18/05/2015).
             /// </summary>
-            public static readonly Pin P4_DO8 = new Pin(4, new byte[2] { 0x44, 0x38 }, new byte[] { 0x01, 0x00 });
+            public static readonly Pin P4_DO8 = new Pin(4);
 
             /// <summary>
             /// RESET(active low), Input, Module reset (reset pulse must be at least 200 ns).
@@ -48,7 +48,7 @@
             /// <summary>
             /// DTR(active low) / SLEEP_RQ/ DI8, Either, Pin sleep control line or digital input 8.
             /// </summary>
-            public static readonly Pin P9_DTR_SLEEP_DIO8 = new Pin(9);
+            public static readonly Pin P9_DTR_SLEEP_DIO8 = new Pin(9, new byte[2] { 0x44, 0x38 }, new byte[] { 0x01, 0x00 });
 
             /// <summary>
             /// Ground.
