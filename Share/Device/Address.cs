@@ -97,27 +97,27 @@ namespace SmartLab.XBee.Device
         }
 
         /// <summary>
-        /// extension method for convert DN / ND (with or without NI String) response to address 
+        /// extension method for convert ND (with or without NI String) response to address 
         /// </summary>
         /// <param name="response">muset be non null parameter</param>
         /// <returns></returns>
-        public static Address Parse(CommandResponseBase response)
+        public static Address Parse(CommandIndicatorBase indicator)
         {
-            if (response == null)
+            if (indicator == null)
                 return null;
 
-            if (response.GetRequestCommand().ToString().ToUpper() != "ND")
+            if (!indicator.GetRequestCommand().ToString().ToUpper().Equals("ND"))
                 return null;
 
-            int length = response.GetParameterLength();
+            int length = indicator.GetParameterLength();
             if (length <= 0)
                 return null;
 
             Address device = new Address();
 
-            Array.Copy(response.GetFrameData(), response.GetParameterOffset() + 2, device.value, 0, 8);
-            device.value[8] = response.GetParameter(0);
-            device.value[9] = response.GetParameter(1);
+            Array.Copy(indicator.GetFrameData(), indicator.GetParameterOffset() + 2, device.value, 0, 8);
+            device.value[8] = indicator.GetParameter(0);
+            device.value[9] = indicator.GetParameter(1);
 
             return device;
         }

@@ -12,6 +12,7 @@ using System.IO.Ports;
 using System.Collections;
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Device;
+using SmartLab.XBee.Helper;
 
 namespace Test
 {
@@ -237,7 +238,22 @@ namespace Test
                 if (code == CommandStatus.OK && p != null)
                     Console.WriteLine(">> " + re.GetRequestCommand() + " = " + UTF8Encoding.UTF8.GetString(p) + " [" + GetString(p) + "]\r\n");
                 else Console.Write("\r\n");
-                
+
+
+                ActiveScanResult result = ATInterpreter.FromAS(re);
+
+                if (result != null)
+                {
+                    Console.WriteLine("\r\n>> Active Scan Result : ");
+                    Console.WriteLine(">> Channel " + result.Channel.ToString("X2"));
+                    Console.WriteLine(">> Pan ID [" + GetString(result.PanID) + "]");
+                    Console.WriteLine(">> Extended Pan ID [" + GetString(result.ExtendedPanID) + "]");
+                    Console.WriteLine(">> Allow Join " + result.AllowJoin);
+                    Console.WriteLine(">> StackProfile " + result.StackProfile);
+                    Console.WriteLine(">> LQI " + result.LQI);
+                    Console.WriteLine(">> RSSI " + result.RSSI + "\r\n");
+                }
+
                 /*
                 //ZigBeeDiscoverAddress dd = ZigBeeDiscoverAddress.Parse(re);
                 XBeeDiscoverAddress dd = XBeeDiscoverAddress.Parse(re);
@@ -284,6 +300,16 @@ namespace Test
                 else Console.Write("\r\n");
             }
 
+            IOSamples samples = ATInterpreter.FromZigBeeIS(re);
+            if (samples != null)
+            {
+                Console.WriteLine(">> Digitals : ");
+                foreach (DictionaryEntry entry in samples.GetDigitals())
+                    Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Analogs : ");
+                foreach (DictionaryEntry entry in samples.GetAnalogs())
+                    Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+            }
             /*
             ZigBeeDiscoverAddress dd = ZigBeeDiscoverAddress.Parse(re);
 
@@ -389,6 +415,23 @@ namespace Test
         {
             byte[] p = e.GetParameter();
             Console.WriteLine("\r\n>> AT command " + e.GetRequestCommand() + " " + e.GetCommandStatus() + " " + (p == null ? " " : UTF8Encoding.UTF8.GetString(p)) + "\r\n");
+
+
+            ActiveScanResult result = ATInterpreter.FromAS(e);
+
+            if (result != null)
+            {
+                Console.WriteLine("\r\n>> Active Scan Result : ");
+                Console.WriteLine(">> Channel " + result.Channel.ToString("X2"));
+                Console.WriteLine(">> Pan ID [" + GetString(result.PanID) + "]");
+                Console.WriteLine(">> Extended Pan ID [" + GetString(result.ExtendedPanID) + "]");
+                Console.WriteLine(">> Allow Join " + result.AllowJoin);
+                Console.WriteLine(">> StackProfile " + result.StackProfile);
+                Console.WriteLine(">> LQI " + result.LQI);
+                Console.WriteLine(">> RSSI " + result.RSSI + "\r\n");
+            }
+
+
         }
 
         static void xbee_onXBeeTransmitStatusResponse(XBeeTxStatusIndicator e)

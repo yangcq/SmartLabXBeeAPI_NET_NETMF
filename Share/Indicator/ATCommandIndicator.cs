@@ -4,7 +4,7 @@ using System;
 
 namespace SmartLab.XBee.Indicator
 {
-    public class ATCommandIndicator : CommandResponseBase
+    public class ATCommandIndicator : CommandIndicatorBase
     {
         public ATCommandIndicator(APIFrame frame)
             : base(frame)

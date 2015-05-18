@@ -3,9 +3,9 @@ using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Indicator
 {
-    public abstract class CommandResponseBase : RxBase
+    public abstract class CommandIndicatorBase : RxBase
     {
-        public CommandResponseBase(APIFrame frame)
+        public CommandIndicatorBase(APIFrame frame)
             : base(frame)
         { }
 

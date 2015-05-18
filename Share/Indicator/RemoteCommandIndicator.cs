@@ -5,7 +5,7 @@ using System;
 
 namespace SmartLab.XBee.Indicator
 {
-    public class RemoteCommandIndicator : CommandResponseBase
+    public class RemoteCommandIndicator : CommandIndicatorBase
     {
         public RemoteCommandIndicator(APIFrame frame)
             : base(frame)
