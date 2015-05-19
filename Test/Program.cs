@@ -23,8 +23,6 @@ namespace Test
         static ExplicitAddress remote = new ExplicitAddress();
         static string[] ports = SerialPort.GetPortNames();
 
-        static IOSamples sss;
-
         static void Main(string[] args)
         {
             if (ports == null || ports.Length == 0)
