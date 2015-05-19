@@ -15,7 +15,7 @@ namespace SmartLab.XBee.Indicator
             return this.GetFrameData()[9] * -1;
         }
 
-        public override IOSamples GetIOSamples()
+        public override IOSamples[] GetIOSamples()
         {
             return RxIOSampleBase.XBeeSamplesParse(this.GetFrameData(), 11);
         }

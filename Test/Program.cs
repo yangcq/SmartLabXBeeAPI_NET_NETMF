@@ -23,6 +23,8 @@ namespace Test
         static ExplicitAddress remote = new ExplicitAddress();
         static string[] ports = SerialPort.GetPortNames();
 
+        static IOSamples sss;
+
         static void Main(string[] args)
         {
             if (ports == null || ports.Length == 0)
@@ -300,15 +302,18 @@ namespace Test
                 else Console.Write("\r\n");
             }
 
-            IOSamples samples = ATInterpreter.FromZigBeeIS(re);
+            IOSamples[] samples = ATInterpreter.FromZigBeeIS(re);
             if (samples != null)
             {
-                Console.WriteLine(">> Digitals : ");
-                foreach (DictionaryEntry entry in samples.GetDigitals())
-                    Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
-                Console.WriteLine(">> Analogs : ");
-                foreach (DictionaryEntry entry in samples.GetAnalogs())
-                    Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+                for (int i = 0; i < samples.Length; i++)
+                {
+                    Console.WriteLine(">> Digitals : ");
+                    foreach (DictionaryEntry entry in samples[i].GetDigitals())
+                        Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+                    Console.WriteLine(">> Analogs : ");
+                    foreach (DictionaryEntry entry in samples[i].GetAnalogs())
+                        Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+                }
             }
             /*
             ZigBeeDiscoverAddress dd = ZigBeeDiscoverAddress.Parse(re);
@@ -462,41 +467,51 @@ namespace Test
 
         static void xbee_onXBeeIODataSampleRx16Response(XBeeRx16IOSampleIndicator e)
         {
-            IOSamples samples = e.GetIOSamples();
-            Address add = e.GetRemoteDevice();
-            Console.WriteLine("\r\n>> XBee Rx16 IO sample : " + e.GetReceiveStatus() + " From " + add.GetNetworkAddress().ToString("X2") + " RSSI = " + e.GetRSSI());
-            Console.WriteLine(">> Digitals : ");
-            foreach (DictionaryEntry entry in samples.GetDigitals())
-                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + (Pin.Status)entry.Value);
-            Console.WriteLine(">> Analogs : ");
-            foreach (DictionaryEntry entry in samples.GetAnalogs())
-                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + (int)entry.Value);
+            IOSamples[] samples = e.GetIOSamples();
+            for (int i = 0; i < samples.Length; i++)
+            {
+                Address add = e.GetRemoteDevice();
+                Console.WriteLine("\r\n>> XBee Rx16 IO sample : " + e.GetReceiveStatus() + " From " + add.GetNetworkAddress().ToString("X2") + " RSSI = " + e.GetRSSI());
+                Console.WriteLine(">> Digitals : ");
+                foreach (DictionaryEntry entry in samples[i].GetDigitals())
+                    Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + (Pin.Status)entry.Value);
+                Console.WriteLine(">> Analogs : ");
+                foreach (DictionaryEntry entry in samples[i].GetAnalogs())
+                    Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + (int)entry.Value);
+            }
         }
 
         static void xbee_onXBeeIODataSampleRx64Response(XBeeRx64IOSampleIndicator e)
         {
-            IOSamples samples = e.GetIOSamples();
-            Address add = e.GetRemoteDevice();
-            Console.WriteLine("\r\n>> XBee Rx64 IO sample : " + e.GetReceiveStatus() + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2") + " RSSI = " + e.GetRSSI());
-            Console.WriteLine(">> Digitals : ");
-            foreach (DictionaryEntry entry in samples.GetDigitals())
-                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
-            Console.WriteLine(">> Analogs : ");
-            foreach (DictionaryEntry entry in samples.GetAnalogs())
-                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+            IOSamples[] samples = e.GetIOSamples();
+
+            for (int i = 0; i < samples.Length; i++)
+            {
+                Address add = e.GetRemoteDevice();
+                Console.WriteLine("\r\n>> XBee Rx64 IO sample : " + e.GetReceiveStatus() + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2") + " RSSI = " + e.GetRSSI());
+                Console.WriteLine(">> Digitals : ");
+                foreach (DictionaryEntry entry in samples[i].GetDigitals())
+                    Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Analogs : ");
+                foreach (DictionaryEntry entry in samples[i].GetAnalogs())
+                    Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+            }
         }
 
         static void xbee_onZigBeeIODataSampleRXResponse(ZigBeeIOSampleIndicator e)
         {
-            IOSamples samples = e.GetIOSamples();
-            Address add = e.GetRemoteDevice();
-            Console.WriteLine("\r\n>> ZigBee IO sample : " + e.GetReceiveStatus() + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2"));
-            Console.WriteLine(">> Digitals : ");
-            foreach (DictionaryEntry entry in samples.GetDigitals())
-                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
-            Console.WriteLine(">> Analogs : ");
-            foreach (DictionaryEntry entry in samples.GetAnalogs())
-                Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+            IOSamples[] samples = e.GetIOSamples();
+            for (int i = 0; i < samples.Length; i++)
+            {
+                Address add = e.GetRemoteDevice();
+                Console.WriteLine("\r\n>> ZigBee IO sample : " + e.GetReceiveStatus() + " From " + add.GetSerialNumberHigh().ToString("X2") + " " + " " + add.GetSerialNumberLow().ToString("X2") + " " + add.GetNetworkAddress().ToString("X2"));
+                Console.WriteLine(">> Digitals : ");
+                foreach (DictionaryEntry entry in samples[i].GetDigitals())
+                    Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+                Console.WriteLine(">> Analogs : ");
+                foreach (DictionaryEntry entry in samples[i].GetAnalogs())
+                    Console.WriteLine(">> Pin " + ((Pin)entry.Key).NUM + " = " + entry.Value);
+            }
         }
 
         static void xbee_onZigBeeExplicitRxResponse(ZigBeeExplicitRxIndicator e)

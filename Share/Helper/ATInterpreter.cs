@@ -5,6 +5,11 @@ namespace SmartLab.XBee.Helper
 {
     public static class ATInterpreter
     {
+        /// <summary>
+        /// Get node discovery result form a ND command.
+        /// </summary>
+        /// <param name="indicator"></param>
+        /// <returns></returns>
         public static Address FromND(CommandIndicatorBase indicator)
         {
             return Address.Parse(indicator);
@@ -20,7 +25,7 @@ namespace SmartLab.XBee.Helper
             return ZigBeeDiscoverAddress.Parse(indicator);
         }
 
-        public static IOSamples FromXBeeIS(CommandIndicatorBase indicator)
+        public static IOSamples[] FromXBeeIS(CommandIndicatorBase indicator)
         {
             if (indicator == null)
                 return null;
@@ -37,7 +42,12 @@ namespace SmartLab.XBee.Helper
             return RxIOSampleBase.XBeeSamplesParse(indicator.GetFrameData(), indicator.GetParameterOffset());
         }
 
-        public static IOSamples FromZigBeeIS(CommandIndicatorBase indicator)
+        /// <summary>
+        /// Parse remote AT command "IS" into IO sample details.
+        /// </summary>
+        /// <param name="indicator"></param>
+        /// <returns></returns>
+        public static IOSamples[] FromZigBeeIS(CommandIndicatorBase indicator)
         {
             if (indicator == null)
                 return null;

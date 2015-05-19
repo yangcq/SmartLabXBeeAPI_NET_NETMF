@@ -4,6 +4,7 @@ using SmartLab.XBee.Device;
 using SmartLab.XBee.Options;
 using SmartLab.XBee.Indicator;
 using SmartLab.XBee.Type;
+using SmartLab.XBee.Helper;
 
 namespace SmartLab.XBee
 {
@@ -372,6 +373,80 @@ namespace SmartLab.XBee
         public RemoteCommandIndicator SetRemotePinFunction(Address remoteAddress, Pin pin, Pin.Functions function) { return SendRemoteATCommand(remoteAddress, new ATCommand(pin.COMMAND), RemoteCommandOptions.ApplyChanges, new byte[] { (byte)function }); }
 
         public RemoteCommandIndicator SetRemoteIODetection(Address remoteAddress, Pin[] pins) { return SendRemoteATCommand(remoteAddress, ATCommand.Digital_IO_Change_Detection, RemoteCommandOptions.ApplyChanges, Pin.IOChangeDetectionConfiguration(pins)); }
+
+        #region IO Sample
+
+        /// <summary>
+        /// The command will immediately return an "OK" response. The data will follow in the normal API format for DIO data event.
+        /// </summary>
+        /// <returns>true if the command is "OK", false if no IO is enabled.</returns>
+        public bool ForceXBeeLocalIOSample() 
+        {
+            ATCommandIndicator re = SendATCommand(ATCommand.Force_Sample, true);
+
+            if (re == null)
+                return false;
+
+            if (re.GetCommandStatus() != Status.CommandStatus.OK)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Return 1 IO sample from the local module.
+        /// </summary>
+        /// <returns></returns>
+        public IOSamples ForceZigBeeLocalIOSample()
+        {
+            ATCommandIndicator re = SendATCommand(ATCommand.Force_Sample, true);
+
+            if (re == null)
+                return null;
+
+            IOSamples[] array = ATInterpreter.FromZigBeeIS(re);
+
+            if (array != null && array.Length > 0)
+                return array[0];
+
+            return null;
+        }
+
+        /// <summary>
+        /// Return 1 IO sample only, Samples before TX (IT) does not affect.
+        /// </summary>
+        /// <param name="remote"Remote address of the device></param>
+        /// <returns></returns>
+        public IOSamples ForceXBeeRemoteIOSample(Address remote)
+        {
+            RemoteCommandIndicator re = SendRemoteATCommand(remote, ATCommand.Force_Sample, OptionsBase.DEFAULT);
+
+            IOSamples[] array = ATInterpreter.FromXBeeIS(re);
+
+            if (array != null && array.Length > 0)
+                return array[0];
+
+            return null;
+        }
+
+        /// <summary>
+        /// Return 1 IO sample only.
+        /// </summary>
+        /// <param name="remote">Remote address of the device</param>
+        /// <returns></returns>
+        public IOSamples ForceZigBeeRemoteIOSample(Address remote)
+        {
+            RemoteCommandIndicator re = SendRemoteATCommand(remote, ATCommand.Force_Sample, OptionsBase.DEFAULT);
+
+            IOSamples[] array = ATInterpreter.FromZigBeeIS(re);
+
+            if (array != null && array.Length > 0)
+                return array[0];
+
+            return null;
+        }
+
+        #endregion
 
         #endregion
 

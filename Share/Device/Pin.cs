@@ -48,7 +48,7 @@
             /// <summary>
             /// DTR(active low) / SLEEP_RQ/ DI8, Either, Pin sleep control line or digital input 8.
             /// </summary>
-            public static readonly Pin P9_DTR_SLEEP_DIO8 = new Pin(9, new byte[2] { 0x44, 0x38 }, new byte[] { 0x01, 0x00 });
+            public static readonly Pin P9_DTR_SLEEP_DIO8 = new Pin(9, new byte[2] { 0x44, 0x38 }, null);
 
             /// <summary>
             /// Ground.
@@ -272,8 +272,19 @@
             }
         }
 
+        /// <summary>
+        /// Pin number from 1 - 20.
+        /// </summary>
         private byte pinNum;
+
+        /// <summary>
+        /// AT Command for the Pin.
+        /// </summary>
         private byte[] pinCom;
+
+        /// <summary>
+        /// DIO change detect.
+        /// </summary>
         private byte[] pinDet;
 
         protected Pin(byte pinNum)
@@ -312,16 +323,24 @@
         public enum Functions
         {
             DISABLED = 0x00,
+
             /// <summary>
             /// ZigBee Pin 20 - Commisioning Button
-            /// ZugBee Pin 6 - RSSI PWM Output
+            /// ZigBee Pin 6 - RSSI PWM Output
             /// </summary>
             RESERVED_FOR_PIN_SPECIFIC_ALTERNATE_FUNCTIONALITIES = 0x01,
+
             ANALOG_INPUT_SINGLE_ENABLED = 0x02,
+
             DIGITAL_INPUT_MONITORED = 0x03,
+
             DIGITAL_OUTPUT_DEFAULT_LOW = 0x04,
+
             DIGITAL_OUTPUT_DEFAULT_HIGH = 0x05,
-            //0x06~0x09
+
+            /// <summary>
+            /// 0x06~0x09
+            /// </summary>
             ALTERNATE_FUNCTIONALITIES_WHERE_APPLICABLE = 0x06,
         }
 
@@ -338,6 +357,9 @@
             int templsb = 0;
             foreach (Pin pin in Pins)
             {
+                if (pin.pinDet == null)
+                    continue;
+
                 tempmsb |= pin.pinDet[0];
                 templsb |= pin.pinDet[1];
             }
