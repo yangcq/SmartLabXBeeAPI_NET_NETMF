@@ -1,23 +1,25 @@
+using System;
+using SmartLab.XBee.Core;
+using SmartLab.XBee.Device;
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Type;
-using SmartLab.XBee.Device;
-using System;
 
 namespace SmartLab.XBee.Indicator
 {
-    public class RemoteCommandIndicator : CommandIndicatorBase
+    public class RemoteCommandIndicator : RxBase, ICommandResponse
     {
         public RemoteCommandIndicator(APIFrame frame)
             : base(frame)
-        { 
-        }
+        { }
 
-        public override ATCommand GetRequestCommand()
+        public int GetFrameID() { return GetFrameData()[1]; }
+
+        public ATCommand GetRequestCommand()
         {
             return new ATCommand(new byte[2] { this.GetFrameData()[12], this.GetFrameData()[13] });
         }
 
-        public override CommandStatus GetCommandStatus()
+        public CommandStatus GetCommandStatus()
         {
             return (CommandStatus)this.GetFrameData()[14];
         }
@@ -29,7 +31,7 @@ namespace SmartLab.XBee.Indicator
             return new Address(cache);
         }
 
-        public override byte[] GetParameter()
+        public byte[] GetParameter()
         {
             int length = this.GetParameterLength();
 
@@ -41,10 +43,10 @@ namespace SmartLab.XBee.Indicator
             return cache;
         }
 
-        public override byte GetParameter(int index) { return this.GetFrameData()[15 + index]; }
+        public byte GetParameter(int index) { return this.GetFrameData()[15 + index]; }
 
-        public override int GetParameterLength() { return this.GetPosition() - 15; }
+        public int GetParameterLength() { return this.GetPosition() - 15; }
 
-        public override int GetParameterOffset() { return 15; }
+        public int GetParameterOffset() { return 15; }
     }
 }

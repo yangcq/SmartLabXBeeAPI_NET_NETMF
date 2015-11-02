@@ -4,7 +4,7 @@ using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Request
 {
-    public class ZigBeeTxRequest : TxPayloadBase
+    public class ZigBeeTxRequest : TxBase, IPayloadRequest
     {
         //0x10
         //FrameID;
@@ -30,20 +30,20 @@ namespace SmartLab.XBee.Request
             this.SetContent(12, broadcastRadius);
         }
 
-        public override void SetTransmitOptions(OptionsBase transmitOptions)
+        public void SetTransmitOptions(OptionsBase transmitOptions)
         {
             this.SetContent(13, transmitOptions.GetValue());
         }
 
-        public override void SetPayload(byte[] data) { SetPayload(data, 0, data.Length); }
+        public void SetPayload(byte[] data) { SetPayload(data, 0, data.Length); }
 
-        public override void SetPayload(byte[] data, int offset, int length)
+        public void SetPayload(byte[] data, int offset, int length)
         {
             this.SetPosition(14);
             this.SetContent(data, offset, length);
         }
 
-        public override void SetRemoteAddress(Address remoteAddress)
+        public void SetRemoteAddress(Address remoteAddress)
         {
             this.SetContent(2, remoteAddress.GetAddressValue());
         }

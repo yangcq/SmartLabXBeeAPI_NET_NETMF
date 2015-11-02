@@ -1,31 +1,34 @@
 using SmartLab.XBee.Device;
 using SmartLab.XBee.Indicator;
+using SmartLab.XBee.Type;
+using System;
+using System.Text;
 
 namespace SmartLab.XBee.Helper
 {
     public static class ATInterpreter
     {
         /// <summary>
-        /// Get node discovery result form a ND command.
+        /// extension method for convert ND (with or without NI String) response to address 
         /// </summary>
         /// <param name="indicator"></param>
         /// <returns></returns>
-        public static Address FromND(CommandIndicatorBase indicator)
+        public static Address FromND(ICommandResponse indicator)
         {
             return Address.Parse(indicator);
         }
 
-        public static XBeeDiscoverAddress FromXBeeND(CommandIndicatorBase indicator)
+        public static XBeeDiscoverAddress FromXBeeND(ICommandResponse indicator)
         {
             return XBeeDiscoverAddress.Parse(indicator);
         }
 
-        public static ZigBeeDiscoverAddress FromZigBeeND(CommandIndicatorBase indicator)
+        public static ZigBeeDiscoverAddress FromZigBeeND(ICommandResponse indicator)
         {
             return ZigBeeDiscoverAddress.Parse(indicator);
         }
 
-        public static IOSamples[] FromXBeeIS(CommandIndicatorBase indicator)
+        public static IOSamples[] FromXBeeIS(ICommandResponse indicator)
         {
             if (indicator == null)
                 return null;
@@ -39,7 +42,7 @@ namespace SmartLab.XBee.Helper
             if (indicator.GetParameterLength() <= 0)
                 return null;
 
-            return RxIOSampleBase.XBeeSamplesParse(indicator.GetFrameData(), indicator.GetParameterOffset());
+            return IOSampleDecoder.XBeeSamplesParse(indicator.GetParameter(), 0);
         }
 
         /// <summary>
@@ -47,7 +50,7 @@ namespace SmartLab.XBee.Helper
         /// </summary>
         /// <param name="indicator"></param>
         /// <returns></returns>
-        public static IOSamples[] FromZigBeeIS(CommandIndicatorBase indicator)
+        public static IOSamples[] FromZigBeeIS(ICommandResponse indicator)
         {
             if (indicator == null)
                 return null;
@@ -61,10 +64,10 @@ namespace SmartLab.XBee.Helper
             if (indicator.GetParameterLength() <= 0)
                 return null;
 
-            return RxIOSampleBase.ZigBeeSamplesParse(indicator.GetFrameData(), indicator.GetParameterOffset());
+            return IOSampleDecoder.ZigBeeSamplesParse(indicator.GetParameter(), 0);
         }
 
-        public static ActiveScanResult FromAS(CommandIndicatorBase indicator)
+        public static ActiveScanResult FromAS(ICommandResponse indicator)
         {
             if (indicator == null)
                 return null;
@@ -80,8 +83,8 @@ namespace SmartLab.XBee.Helper
 
             ActiveScanResult result = new ActiveScanResult();
 
-            int index = indicator.GetParameterOffset();
-            byte[] data = indicator.GetFrameData();
+            int index = 0;
+            byte[] data = indicator.GetParameter();
 
             result.AS_Type = data[index];
             result.Channel = data[index + 1];

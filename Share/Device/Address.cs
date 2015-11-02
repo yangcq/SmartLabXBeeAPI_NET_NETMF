@@ -1,5 +1,5 @@
-using SmartLab.XBee.Indicator;
 using System;
+using SmartLab.XBee.Indicator;
 
 namespace SmartLab.XBee.Device
 {
@@ -96,32 +96,6 @@ namespace SmartLab.XBee.Device
             return value;
         }
 
-        /// <summary>
-        /// extension method for convert ND (with or without NI String) response to address 
-        /// </summary>
-        /// <param name="response">muset be non null parameter</param>
-        /// <returns></returns>
-        public static Address Parse(CommandIndicatorBase indicator)
-        {
-            if (indicator == null)
-                return null;
-
-            if (!indicator.GetRequestCommand().ToString().ToUpper().Equals("ND"))
-                return null;
-
-            int length = indicator.GetParameterLength();
-            if (length <= 0)
-                return null;
-
-            Address device = new Address();
-
-            Array.Copy(indicator.GetFrameData(), indicator.GetParameterOffset() + 2, device.value, 0, 8);
-            device.value[8] = indicator.GetParameter(0);
-            device.value[9] = indicator.GetParameter(1);
-
-            return device;
-        }
-
         public override bool Equals(object obj)
         {
             if (obj == null)
@@ -140,6 +114,33 @@ namespace SmartLab.XBee.Device
                 return false;
 
             return this.GetSerialNumberHigh() == address.GetSerialNumberHigh() && this.GetSerialNumberLow() == address.GetSerialNumberLow();
+        }
+
+        /// <summary>
+        /// extension method for convert ND (with or without NI String) response to address 
+        /// </summary>
+        /// <param name="response">muset be non null parameter</param>
+        /// <returns></returns>
+        public static Address Parse(ICommandResponse indicator)
+        {
+            if (indicator == null)
+                return null;
+
+            if (!indicator.GetRequestCommand().ToString().ToUpper().Equals("ND"))
+                return null;
+
+            int length = indicator.GetParameterLength();
+            if (length < 10)
+                return null;
+
+            Address device = new Address();
+
+            byte[] raw = indicator.GetParameter();
+            Array.Copy(raw, 2, device.value, 0, 8);
+            device.value[8] = raw[0];
+            device.value[9] = raw[1];
+
+            return device;
         }
     }
 }

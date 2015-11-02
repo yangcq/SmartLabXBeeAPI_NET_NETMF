@@ -1,6 +1,5 @@
-using System;
-using SmartLab.XBee.Type;
 using SmartLab.XBee.Device;
+using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Request
 {

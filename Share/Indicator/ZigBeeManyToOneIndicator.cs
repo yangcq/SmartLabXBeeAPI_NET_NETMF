@@ -1,6 +1,5 @@
-﻿using SmartLab.XBee.Status;
-using SmartLab.XBee.Type;
-using System;
+﻿using System;
+using SmartLab.XBee.Core;
 using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Indicator

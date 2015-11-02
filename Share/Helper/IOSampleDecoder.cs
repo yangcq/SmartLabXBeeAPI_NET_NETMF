@@ -1,15 +1,11 @@
-using SmartLab.XBee.Device;
-using SmartLab.XBee.Status;
 using System.Collections;
+using SmartLab.XBee.Type;
+using SmartLab.XBee.Indicator;
 
-namespace SmartLab.XBee.Indicator
+namespace SmartLab.XBee.Helper
 {
-    public abstract class RxIOSampleBase : RxBase
+    public static class IOSampleDecoder
     {
-        public RxIOSampleBase(APIFrame frame)
-            : base(frame)
-        { }
-
         public static IOSamples[] XBeeSamplesParse(byte[] IOSamplePayload, int offset)
         {
             // at least 3 bytes, 1 byte of [number of samples] + 2 bytes of [digital channel mask] and [analog channel mask].
@@ -25,7 +21,7 @@ namespace SmartLab.XBee.Indicator
             int index = offset + 1;
 
             IOSamples[] smaplearray = new IOSamples[numofsamples];
-            
+
             int digitMask = (IOSamplePayload[index] & 0x01) << 8 | IOSamplePayload[index + 1];
             int analogMask = IOSamplePayload[index] & 0xFE;
 
@@ -56,7 +52,7 @@ namespace SmartLab.XBee.Indicator
                         Digital.Add(Device.Pin.XBee.P12_CTS_DIO7, (IOSamplePayload[index + 1] & 0x80) == 0x80 ? Device.Pin.Status.HIGH : Device.Pin.Status.LOW);
                     if (((digitMask >> 8) & 0x01) == 0x01)
                         Digital.Add(Device.Pin.XBee.P9_DTR_SLEEP_DIO8, (IOSamplePayload[index] & 0x01) == 0x01 ? Device.Pin.Status.HIGH : Device.Pin.Status.LOW);
-                    
+
                     //skip the 2 [digital sample]
                     index += 2;
                 }
@@ -169,17 +165,5 @@ namespace SmartLab.XBee.Indicator
 
             return smaplearray;
         }
-
-        public abstract IOSamples[] GetIOSamples();
-
-        public abstract ReceiveStatus GetReceiveStatus();
-
-        public abstract Address GetRemoteDevice();
-
-        /// <summary>
-        /// not apply to ZigBee
-        /// </summary>
-        /// <returns></returns>
-        public virtual int GetRSSI() { return 0; }
     }
 }

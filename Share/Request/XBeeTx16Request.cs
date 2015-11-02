@@ -1,11 +1,10 @@
-using System;
+using SmartLab.XBee.Device;
 using SmartLab.XBee.Options;
 using SmartLab.XBee.Type;
-using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Request
 {
-    public class XBeeTx16Request : TxPayloadBase
+    public class XBeeTx16Request : TxBase, IPayloadRequest
     {
         /// <summary>
         /// the ieee 64 bit address is ignored
@@ -38,15 +37,15 @@ namespace SmartLab.XBee.Request
             this.SetContent(payload, offset, length);
         }
 
-        public override void SetPayload(byte[] data) { SetPayload(data, 0, data.Length); }
+        public void SetPayload(byte[] data) { SetPayload(data, 0, data.Length); }
 
-        public override void SetPayload(byte[] data, int offset, int length)
+        public void SetPayload(byte[] data, int offset, int length)
         {
             this.SetPosition(5);
             this.SetContent(data, offset, length);
         }
 
-        public override void SetTransmitOptions(OptionsBase transmitOptions)
+        public void SetTransmitOptions(OptionsBase transmitOptions)
         {
             this.SetContent(4, transmitOptions.GetValue());
         }
@@ -55,7 +54,7 @@ namespace SmartLab.XBee.Request
         /// the ieee 64 bit address is ignored
         /// </summary>
         /// <param name="networkAddress"></param>
-        public override void SetRemoteAddress(Address remoteAddress)
+        public void SetRemoteAddress(Address remoteAddress)
         {
             this.SetContent(2, (byte)(remoteAddress.GetNetworkAddress() >> 8));
             this.SetContent(3, (byte)(remoteAddress.GetNetworkAddress()));

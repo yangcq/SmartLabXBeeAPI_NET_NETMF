@@ -1,15 +1,20 @@
+using SmartLab.XBee.Core;
 using SmartLab.XBee.Status;
-using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Indicator
 {
-    public class XBeeTxStatusIndicator : TxStatusBase
+    public class XBeeTxStatusIndicator : RxBase, ITransmitStatus
     {
         public XBeeTxStatusIndicator(APIFrame frame)
             : base(frame)
         { }
 
-        public override DeliveryStatus GetDeliveryStatus()
+        public int GetFrameID()
+        {
+            return this.GetFrameData()[1];
+        }
+
+        public DeliveryStatus GetDeliveryStatus()
         {
             return (DeliveryStatus)this.GetFrameData()[2];
         }

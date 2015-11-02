@@ -1,4 +1,4 @@
-using System;
+using SmartLab.XBee.Core;
 using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Request

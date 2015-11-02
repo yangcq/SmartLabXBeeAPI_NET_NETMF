@@ -1,12 +1,11 @@
-using System.IO.Ports;
 using System.Threading;
 using SmartLab.XBee.Device;
-using SmartLab.XBee.Options;
-using SmartLab.XBee.Indicator;
-using SmartLab.XBee.Type;
 using SmartLab.XBee.Helper;
+using SmartLab.XBee.Indicator;
+using SmartLab.XBee.Options;
+using SmartLab.XBee.Type;
 
-namespace SmartLab.XBee
+namespace SmartLab.XBee.Core
 {
     #region Delegate
     public delegate void ChecksumErrorHandler(APIFrame e);
@@ -30,7 +29,7 @@ namespace SmartLab.XBee
     public delegate void RouteRecordIndicatorHandler(RouteRecordIndicator indicator);
     #endregion
 
-    public class Core
+    public class CoreAPI
     {
         public event ChecksumErrorHandler onChecksumErrorIndicator;
         public event UndefinedPacketHandler onUndefinedPacketIndicator;
@@ -52,6 +51,23 @@ namespace SmartLab.XBee
         public event ManyToOneRouteIndicatorHandler onManyToOneRequestIndicator;
         public event RouteRecordIndicatorHandler onRouteRecordIndicator;
 
+        XBeeRx64Indicator xBeeRx64Indicator = new XBeeRx64Indicator(null);
+        XBeeRx16Indicator xBeeRx16Indicator = new XBeeRx16Indicator(null);
+        XBeeRx64IOSampleIndicator xBeeRx64IOSampleIndicator = new XBeeRx64IOSampleIndicator(null);
+        XBeeRx16IOSampleIndicator xBeeRx16IOSampleIndicator = new XBeeRx16IOSampleIndicator(null);
+        XBeeTxStatusIndicator xBeeTxStatusIndicator = new XBeeTxStatusIndicator(null);
+        ATCommandIndicator aTCommandIndicator = new ATCommandIndicator(null);
+        ModemStatusIndicator modemStatusIndicator = new ModemStatusIndicator(null);
+        ZigBeeTxStatusIndicator zigBeeTxStatusIndicator = new ZigBeeTxStatusIndicator(null);
+        ZigBeeRxIndicator zigBeeRxIndicator = new ZigBeeRxIndicator(null);
+        ZigBeeExplicitRxIndicator zigBeeExplicitRxIndicator = new ZigBeeExplicitRxIndicator(null);
+        ZigBeeIOSampleIndicator zigBeeIOSampleIndicator = new ZigBeeIOSampleIndicator(null);
+        SensorReadIndicator sensorReadIndicator = new SensorReadIndicator(null);
+        NodeIdentificationIndicator nodeIdentificationIndicator = new NodeIdentificationIndicator(null);
+        RemoteCommandIndicator remoteCommandIndicator = new RemoteCommandIndicator(null);
+        RouteRecordIndicator routeRecordIndicator = new RouteRecordIndicator(null);
+        ManyToOneRouteIndicator manyToOneRouteIndicator = new ManyToOneRouteIndicator(null);
+
         private const byte KEY = 0x7E;
         private const byte ESCAPED = 0x7D;
         private const byte XON = 0x11;
@@ -72,7 +88,7 @@ namespace SmartLab.XBee
         private bool isRunning = false;
         private bool isChecksum = true;
 
-        public Core(ISerial serial, APIMode mode)
+        public CoreAPI(ISerial serial, APIMode mode)
         {
             this.serial = serial;
             this.waitEvent = new AutoResetEvent(false);
@@ -380,7 +396,7 @@ namespace SmartLab.XBee
         /// The command will immediately return an "OK" response. The data will follow in the normal API format for DIO data event.
         /// </summary>
         /// <returns>true if the command is "OK", false if no IO is enabled.</returns>
-        public bool ForceXBeeLocalIOSample() 
+        public bool ForceXBeeLocalIOSample()
         {
             ATCommandIndicator re = SendATCommand(ATCommand.Force_Sample, true);
 
@@ -476,68 +492,68 @@ namespace SmartLab.XBee
             switch (response.GetFrameType())
             {
                 case API_IDENTIFIER.Rx64_Receive_Packet:
-                    if (onXBeeRx64Indicator != null)
-                        onXBeeRx64Indicator(new XBeeRx64Indicator(response));
+                    if (onXBeeRx64Indicator != null && xBeeRx64Indicator.Convert(response))
+                        onXBeeRx64Indicator(xBeeRx64Indicator);
                     break;
                 case API_IDENTIFIER.Rx16_Receive_Packet:
-                    if (onXBeeRx16Indicator != null)
-                        onXBeeRx16Indicator(new XBeeRx16Indicator(response));
+                    if (onXBeeRx16Indicator != null && xBeeRx16Indicator.Convert(response))
+                        onXBeeRx16Indicator(xBeeRx16Indicator);
                     break;
                 case API_IDENTIFIER.Rx64_IO_Data_Sample_Rx_Indicator:
-                    if (onXBeeRx64IOSampleIndicator != null)
-                        onXBeeRx64IOSampleIndicator(new XBeeRx64IOSampleIndicator(response));
+                    if (onXBeeRx64IOSampleIndicator != null && xBeeRx64IOSampleIndicator.Convert(response))
+                        onXBeeRx64IOSampleIndicator(xBeeRx64IOSampleIndicator);
                     break;
                 case API_IDENTIFIER.Rx16_IO_Data_Sample_Rx_Indicator:
-                    if (onXBeeRx16IOSampleIndicator != null)
-                        onXBeeRx16IOSampleIndicator(new XBeeRx16IOSampleIndicator(response));
+                    if (onXBeeRx16IOSampleIndicator != null && xBeeRx16IOSampleIndicator.Convert(response))
+                        onXBeeRx16IOSampleIndicator(xBeeRx16IOSampleIndicator);
                     break;
                 case API_IDENTIFIER.XBee_Transmit_Status:
-                    if (onXBeeTxStatusIndicator != null)
-                        onXBeeTxStatusIndicator(new XBeeTxStatusIndicator(response));
+                    if (onXBeeTxStatusIndicator != null && xBeeTxStatusIndicator.Convert(response))
+                        onXBeeTxStatusIndicator(xBeeTxStatusIndicator);
                     break;
                 case API_IDENTIFIER.AT_Command_Response:
-                    if (onATCommandIndicator != null)
-                        onATCommandIndicator(new ATCommandIndicator(response));
+                    if (onATCommandIndicator != null && aTCommandIndicator.Convert(response))
+                        onATCommandIndicator(aTCommandIndicator);
                     break;
                 case API_IDENTIFIER.Modem_Status:
-                    if (onModemStatusIndicator != null)
-                        onModemStatusIndicator(new ModemStatusIndicator(response));
+                    if (onModemStatusIndicator != null && modemStatusIndicator.Convert(response))
+                        onModemStatusIndicator(modemStatusIndicator);
                     break;
                 case API_IDENTIFIER.ZigBee_Transmit_Status:
-                    if (onZigBeeTxStatusIndicator != null)
-                        onZigBeeTxStatusIndicator(new ZigBeeTxStatusIndicator(response));
+                    if (onZigBeeTxStatusIndicator != null && zigBeeTxStatusIndicator.Convert(response))
+                        onZigBeeTxStatusIndicator(zigBeeTxStatusIndicator);
                     break;
                 case API_IDENTIFIER.ZigBee_Receive_Packet:
-                    if (onZigBeeRxIndicator != null)
-                        onZigBeeRxIndicator(new ZigBeeRxIndicator(response));
+                    if (onZigBeeRxIndicator != null && zigBeeRxIndicator.Convert(response))
+                        onZigBeeRxIndicator(zigBeeRxIndicator);
                     break;
                 case API_IDENTIFIER.ZigBee_Explicit_Rx_Indicator:
-                    if (onZigBeeExplicitRxIndicator != null)
-                        onZigBeeExplicitRxIndicator(new ZigBeeExplicitRxIndicator(response));
+                    if (onZigBeeExplicitRxIndicator != null && zigBeeExplicitRxIndicator.Convert(response))
+                        onZigBeeExplicitRxIndicator(zigBeeExplicitRxIndicator);
                     break;
                 case API_IDENTIFIER.ZigBee_IO_Data_Sample_Rx_Indicator:
-                    if (onZigBeeIOSampleIndicator != null)
-                        onZigBeeIOSampleIndicator(new ZigBeeIOSampleIndicator(response));
+                    if (onZigBeeIOSampleIndicator != null && zigBeeIOSampleIndicator.Convert(response))
+                        onZigBeeIOSampleIndicator(zigBeeIOSampleIndicator);
                     break;
                 case API_IDENTIFIER.XBee_Sensor_Read_Indicato:
-                    if (onSensorReadIndicator != null)
-                        onSensorReadIndicator(new SensorReadIndicator(response));
+                    if (onSensorReadIndicator != null && sensorReadIndicator.Convert(response))
+                        onSensorReadIndicator(sensorReadIndicator);
                     break;
                 case API_IDENTIFIER.Node_Identification_Indicator:
-                    if (onNodeIdentificationIndicator != null)
-                        onNodeIdentificationIndicator(new NodeIdentificationIndicator(response));
+                    if (onNodeIdentificationIndicator != null && nodeIdentificationIndicator.Convert(response))
+                        onNodeIdentificationIndicator(nodeIdentificationIndicator);
                     break;
                 case API_IDENTIFIER.Remote_Command_Response:
-                    if (onRemoteCommandIndicator != null)
-                        onRemoteCommandIndicator(new RemoteCommandIndicator(response));
+                    if (onRemoteCommandIndicator != null && remoteCommandIndicator.Convert(response))
+                        onRemoteCommandIndicator(remoteCommandIndicator);
                     break;
                 case API_IDENTIFIER.Route_Record_Indicator:
-                    if (onRouteRecordIndicator != null)
-                        onRouteRecordIndicator(new RouteRecordIndicator(response));
+                    if (onRouteRecordIndicator != null && routeRecordIndicator.Convert(response))
+                        onRouteRecordIndicator(routeRecordIndicator);
                     break;
                 case API_IDENTIFIER.Many_to_One_Route_Request_Indicator:
-                    if (onManyToOneRequestIndicator != null)
-                        onManyToOneRequestIndicator(new ManyToOneRouteIndicator(response));
+                    if (onManyToOneRequestIndicator != null && manyToOneRouteIndicator.Convert(response))
+                        onManyToOneRequestIndicator(manyToOneRouteIndicator);
                     break;
                 case API_IDENTIFIER.Create_Source_Route: break;
                 default:

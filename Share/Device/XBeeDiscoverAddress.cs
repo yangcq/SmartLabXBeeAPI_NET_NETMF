@@ -1,6 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using SmartLab.XBee.Indicator;
-using System;
 
 namespace SmartLab.XBee.Device
 {
@@ -8,7 +8,7 @@ namespace SmartLab.XBee.Device
     {
         private int RSSI;
         protected string NIString;
-
+        
         /// <summary>
         /// not apply to ZigBee Discovery
         /// </summary>
@@ -28,7 +28,7 @@ namespace SmartLab.XBee.Device
         /// </summary>
         /// <param name="response">muset be non null parameter</param>
         /// <returns></returns>
-        public static new XBeeDiscoverAddress Parse(CommandIndicatorBase indicator)
+        public static new XBeeDiscoverAddress Parse(ICommandResponse indicator)
         {
             if (indicator == null)
                 return null;
@@ -37,16 +37,16 @@ namespace SmartLab.XBee.Device
                 return null;
 
             int length = indicator.GetParameterLength();
-            if (length <= 0)
+            if (length < 10)
                 return null;
 
             XBeeDiscoverAddress device = new XBeeDiscoverAddress();
+            byte[] raw = indicator.GetParameter();
+            Array.Copy(raw, 2, device.value, 0, 8);
+            device.value[8] = raw[0];
+            device.value[9] = raw[1];
 
-            Array.Copy(indicator.GetFrameData(), indicator.GetParameterOffset() + 2, device.value, 0, 8);
-            device.value[8] = indicator.GetParameter(0);
-            device.value[9] = indicator.GetParameter(1);
-
-            device.RSSI = indicator.GetParameter(10) * -1;
+            device.RSSI = raw[10] * -1;
 
             try
             {
@@ -57,7 +57,7 @@ namespace SmartLab.XBee.Device
                 else
                 {
                     byte[] cache = new byte[nilength];
-                    Array.Copy(indicator.GetFrameData(), indicator.GetParameterOffset() + 11, cache, 0, nilength);
+                    Array.Copy(raw, 11, cache, 0, nilength);
                     device.NIString = new string(UTF8Encoding.UTF8.GetChars(cache));
                 }
             }

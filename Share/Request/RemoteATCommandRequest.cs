@@ -1,11 +1,10 @@
-using System;
+using SmartLab.XBee.Device;
 using SmartLab.XBee.Options;
 using SmartLab.XBee.Type;
-using SmartLab.XBee.Device;
 
 namespace SmartLab.XBee.Request
 {
-    public class RemoteATCommandRequest : CommandRequestBase
+    public class RemoteATCommandRequest : TxBase, ICommandRequest
     {
         //0x17
         //FrameID;
@@ -42,21 +41,21 @@ namespace SmartLab.XBee.Request
             this.SetContent(12, TransmitOptions.GetValue());
         }
 
-        public override void SetAppleChanges(bool appleChanges)
+        public void SetAppleChanges(bool appleChanges)
         {
             if (appleChanges)
                 this.GetFrameData()[12] |= 0x02;
             else this.GetFrameData()[12] &= 0xFD;
         }
 
-        public override void SetCommand(ATCommand command)
+        public void SetCommand(ATCommand command)
         {
             this.SetContent(13, command.GetValue());
         }
 
-        public override void SetParameter(byte[] parameter) { this.SetParameter(parameter, 0, parameter.Length); }
+        public void SetParameter(byte[] parameter) { this.SetParameter(parameter, 0, parameter.Length); }
 
-        public override void SetParameter(byte[] parameter, int offset, int length)
+        public void SetParameter(byte[] parameter, int offset, int length)
         {
             this.SetPosition(15);
             this.SetContent(parameter, offset, length);

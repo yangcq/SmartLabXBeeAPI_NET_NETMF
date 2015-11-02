@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartLab.XBee.Core;
 using SmartLab.XBee.Device;
 using SmartLab.XBee.Status;
 

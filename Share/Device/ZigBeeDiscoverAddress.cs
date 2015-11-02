@@ -5,13 +5,15 @@ using System;
 
 namespace SmartLab.XBee.Device
 {
+    // total 8 bytes
+    // 2 bytes of ParentAddress16 + 1 byte of Type + 1 byte of Status (Reserved) + 2 bytes of ProfileID + 2 bytes of ManufacturerID
     public class ZigBeeDiscoverAddress : XBeeDiscoverAddress
     {
         // total 8 bytes
         // 2 bytes of ParentAddress16 + 1 byte of Type + 1 byte of Status (Reserved) + 2 bytes of ProfileID + 2 bytes of ManufacturerID
         private byte[] zigbeeAdditional;
 
-        public int ManufacturerID()
+        public int GetManufacturerID()
         {
             return (zigbeeAdditional[6] << 8) | zigbeeAdditional[7];
         }
@@ -36,7 +38,7 @@ namespace SmartLab.XBee.Device
         /// </summary>
         /// <param name="response">muset be non null parameter</param>
         /// <returns></returns>
-        public static new ZigBeeDiscoverAddress Parse(CommandIndicatorBase indicator)
+        public static new ZigBeeDiscoverAddress Parse(ICommandResponse indicator)
         {
             if (indicator == null)
                 return null;
@@ -45,15 +47,15 @@ namespace SmartLab.XBee.Device
                 return null;
 
             int length = indicator.GetParameterLength();
-            if (length <= 0)
+            if (length < 10)
                 return null;
 
             ZigBeeDiscoverAddress device = new ZigBeeDiscoverAddress();
             int offset = indicator.GetParameterLength() - 8;
-
-            Array.Copy(indicator.GetFrameData(), indicator.GetParameterOffset() + 2, device.value, 0, 8);
-            device.value[8] = indicator.GetParameter(0);
-            device.value[9] = indicator.GetParameter(1);
+            byte[] raw = indicator.GetParameter();
+            Array.Copy(raw, 2, device.value, 0, 8);
+            device.value[8] = raw[0];
+            device.value[9] = raw[1];
 
             try
             {
@@ -64,14 +66,14 @@ namespace SmartLab.XBee.Device
                 else
                 {
                     byte[] cache = new byte[nilength];
-                    Array.Copy(indicator.GetFrameData(), indicator.GetParameterOffset() + 10, cache, 0, nilength);
+                    Array.Copy(raw, 10, cache, 0, nilength);
                     device.NIString = new string(UTF8Encoding.UTF8.GetChars(cache));
                 }
             }
             catch { device.NIString = "error while encoding"; }
 
             byte[] add = new byte[8];
-            Array.Copy(indicator.GetFrameData(), offset, add, 0, 8);
+            Array.Copy(raw, offset, add, 0, 8);
             device.zigbeeAdditional = add;
 
             return device;

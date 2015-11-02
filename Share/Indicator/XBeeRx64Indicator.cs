@@ -1,17 +1,17 @@
-using SmartLab.XBee.Status;
-using SmartLab.XBee.Type;
-using SmartLab.XBee.Device;
 using System;
+using SmartLab.XBee.Core;
+using SmartLab.XBee.Device;
+using SmartLab.XBee.Status;
 
 namespace SmartLab.XBee.Indicator
 {
-    public class XBeeRx64Indicator : RxPayloadBase
+    public class XBeeRx64Indicator : RxBase, IPayloadResponse
     {
         public XBeeRx64Indicator(APIFrame frame)
             : base(frame)
         { }
 
-        public override byte[] GetReceivedData()
+        public byte[] GetReceivedData()
         {
             int length = this.GetReceivedDataLength();
 
@@ -23,23 +23,23 @@ namespace SmartLab.XBee.Indicator
             return cache;
         }
 
-        public override int GetReceivedDataOffset() { return 11; }
+        public int GetReceivedDataOffset() { return 11; }
 
-        public override byte GetReceivedData(int index) { return this.GetFrameData()[11 + index]; }
+        public byte GetReceivedData(int index) { return this.GetFrameData()[11 + index]; }
 
-        public override int GetReceivedDataLength() { return this.GetPosition() - 11; }
+        public int GetReceivedDataLength() { return this.GetPosition() - 11; }
 
-        public override int GetRSSI()
+        public int GetRSSI()
         {
             return this.GetFrameData()[9] * -1;
         }
 
-        public override ReceiveStatus GetReceiveStatus()
+        public ReceiveStatus GetReceiveStatus()
         {
             return (ReceiveStatus)this.GetFrameData()[10];
         }
 
-        public override Address GetRemoteDevice()
+        public Address GetRemoteDevice()
         {
             return new Address(new byte[] { GetFrameData()[1], GetFrameData()[2], GetFrameData()[3], GetFrameData()[4], GetFrameData()[5], GetFrameData()[6], GetFrameData()[7], GetFrameData()[8], 0x00, 0x00 });
         }

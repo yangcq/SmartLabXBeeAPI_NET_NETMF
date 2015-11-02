@@ -13,6 +13,7 @@ using System.Collections;
 using SmartLab.XBee.Status;
 using SmartLab.XBee.Device;
 using SmartLab.XBee.Helper;
+using SmartLab.XBee.Core;
 
 namespace Test
 {

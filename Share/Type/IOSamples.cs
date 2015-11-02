@@ -1,7 +1,7 @@
 using System.Collections;
 using SmartLab.XBee.Device;
 
-namespace SmartLab.XBee
+namespace SmartLab.XBee.Type
 {
     public class IOSamples
     {

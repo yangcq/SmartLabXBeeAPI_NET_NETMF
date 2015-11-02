@@ -1,8 +1,9 @@
 ﻿using SmartLab.XBee.Type;
+using SmartLab.XBee.Core;
 
 namespace SmartLab.XBee
 {
-    public class XBeeAPI : Core
+    public class XBeeAPI : CoreAPI
     {
         public XBeeAPI(string COM)
             : this(new SerialData(COM), APIMode.NORMAL)

@@ -1,6 +1,3 @@
-using SmartLab.XBee.Device;
-using SmartLab.XBee.Indicator;
-
 namespace SmartLab.XBee.Helper
 {
     /// <summary>

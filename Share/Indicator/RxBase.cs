@@ -1,4 +1,4 @@
-using SmartLab.XBee.Type;
+using SmartLab.XBee.Core;
 
 namespace SmartLab.XBee.Indicator
 {

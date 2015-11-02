@@ -1,16 +1,17 @@
+using System;
+using SmartLab.XBee.Core;
 using SmartLab.XBee.Device;
 using SmartLab.XBee.Status;
-using System;
 
 namespace SmartLab.XBee.Indicator
 {
-    public class ZigBeeExplicitRxIndicator : RxPayloadBase
+    public class ZigBeeExplicitRxIndicator : RxBase, IPayloadResponse
     {
         public ZigBeeExplicitRxIndicator(APIFrame frame)
             : base(frame)
         { }
 
-        public override byte[] GetReceivedData()
+        public byte[] GetReceivedData()
         {
             int length = this.GetReceivedDataLength();
 
@@ -22,31 +23,36 @@ namespace SmartLab.XBee.Indicator
             return cache;
         }
 
-        public override int GetReceivedDataOffset() { return 18; }
+        public int GetReceivedDataOffset() { return 18; }
 
-        public override byte GetReceivedData(int index) { return this.GetFrameData()[18 + index]; }
+        public byte GetReceivedData(int index) { return this.GetFrameData()[18 + index]; }
 
-        public override int GetReceivedDataLength() { return this.GetPosition() - 18; }
+        public int GetReceivedDataLength() { return this.GetPosition() - 18; }
 
         public ExplicitAddress GetExplicitRemoteDevice()
         {
             return (ExplicitAddress) GetRemoteDevice();
         }
 
-        public override Address GetRemoteDevice()
+        public  Address GetRemoteDevice()
         {
             byte[] address1 = new byte[10];
-            Array.Copy(this.GetFrameData(), 18, address1, 0, 10);
+            Array.Copy(this.GetFrameData(), 1, address1, 0, 10);
 
             byte[] address2 = new byte[6];
-            Array.Copy(this.GetFrameData(), 18, address2, 0, 6);
+            Array.Copy(this.GetFrameData(), 11, address2, 0, 6);
 
             return new ExplicitAddress(address1, address2);
         }
 
-        public override ReceiveStatus GetReceiveStatus()
+        public ReceiveStatus GetReceiveStatus()
         {
             return (ReceiveStatus)this.GetFrameData()[17];
+        }
+
+        public int GetRSSI()
+        {
+            return 0;
         }
     }
 }

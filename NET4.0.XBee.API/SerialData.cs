@@ -1,4 +1,5 @@
 ﻿using System.IO.Ports;
+using SmartLab.XBee.Core;
 
 namespace SmartLab.XBee
 {
@@ -40,6 +41,13 @@ namespace SmartLab.XBee
         {
             if (serialPort.IsOpen)
                 serialPort.Close();
+        }
+
+        public bool Peek() 
+        {
+            if (serialPort.BytesToRead > 0)
+                return true;
+            else return false;
         }
     }
 }

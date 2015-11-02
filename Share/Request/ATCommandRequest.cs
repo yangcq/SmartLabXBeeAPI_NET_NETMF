@@ -1,9 +1,8 @@
-using System;
 using SmartLab.XBee.Type;
 
 namespace SmartLab.XBee.Request
 {
-    public class ATCommandRequest : CommandRequestBase
+    public class ATCommandRequest : TxBase, ICommandRequest
     {
         //0x08 or 0x09
         //FrameID
@@ -35,7 +34,7 @@ namespace SmartLab.XBee.Request
                 this.SetContent(parameter, offset, length);
         }
 
-        public override void SetAppleChanges(bool appleChanges)
+        public void SetAppleChanges(bool appleChanges)
         {
             if (appleChanges)
                 SetFrameType(API_IDENTIFIER.AT_Command);
@@ -43,14 +42,14 @@ namespace SmartLab.XBee.Request
                 SetFrameType(API_IDENTIFIER.AT_Command_Queue_Parameter_Value);
         }
 
-        public override void SetCommand(ATCommand command)
+        public void SetCommand(ATCommand command)
         {
             this.SetContent(2, command.GetValue());
         }
 
-        public override void SetParameter(byte[] parameter) { this.SetParameter(parameter, 0 , parameter.Length); }
+        public void SetParameter(byte[] parameter) { this.SetParameter(parameter, 0 , parameter.Length); }
 
-        public override void SetParameter(byte[] parameter, int offset, int length)
+        public void SetParameter(byte[] parameter, int offset, int length)
         {
             this.SetPosition(4);
             this.SetContent(parameter, offset, length);

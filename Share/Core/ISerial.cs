@@ -1,4 +1,4 @@
-namespace SmartLab.XBee
+namespace SmartLab.XBee.Core
 {
     public interface ISerial
     {
@@ -19,5 +19,7 @@ namespace SmartLab.XBee
         void Open();
 
         void Close();
+
+        bool Peek();
     }
 }
